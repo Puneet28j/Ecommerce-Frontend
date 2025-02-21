@@ -25,7 +25,10 @@ const CarouselThumbnail = ({
         `}
     >
       <img
-        src={photo.url}
+        src={photo.url.replace(
+          "/upload/",
+          "/upload/c_fill,h_100,w_100,q_auto:low/"
+        )}
         alt={`Thumbnail ${index + 1}`}
         className="h-full w-full object-cover"
       />
