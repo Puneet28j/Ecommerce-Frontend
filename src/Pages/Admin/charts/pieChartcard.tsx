@@ -1,24 +1,18 @@
 import { Pie, PieChart, Sector } from "recharts";
 import {
-  ChartConfig,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
+import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "../../../components/ui/chart";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
-import { TrendingUp } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { dashboardApi } from "../../../redux/api/dashboardAPI";
 
 const PieChartCard = ({
   title,

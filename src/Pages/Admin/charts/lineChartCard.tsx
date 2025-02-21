@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -21,8 +20,8 @@ import {
 export const description = "A line chart";
 
 export const LineChartCard = ({
-  title,
-  description,
+  // title,
+  // description,
   chartData,
   chartConfig,
 }: {
