@@ -164,26 +164,29 @@ const ProductHeader = memo(
 
         {/* Product Details Section */}
         <div className="flex flex-col sm:max-w-screen-lg sm:mr-8 px-4">
-          {/* Product Name */}
-          {isLoading ? (
-            <Skeleton className="h-9 w-3/4 rounded-full animate-pulse" />
-          ) : (
-            <h1 className="text-3xl h-9 font-bold text-gray-800">
-              {product?.name}
-            </h1>
-          )}
+          {/* Product Name & Star Rating */}
+          <div className="flex flex-wrap items-center gap-2">
+            {isLoading ? (
+              <Skeleton className="h-9 w-3/4 rounded-full animate-pulse" />
+            ) : (
+              <h1 className="text-3xl font-bold text-gray-800 min-w-0">
+                {product?.name}
+              </h1>
+            )}
 
-          {/* Star Rating */}
-          {isLoading ? (
-            <Skeleton className="h-6 w-32 rounded-full animate-pulse mt-2" />
-          ) : (
-            <StarRating
-              fullStars={fullStars}
-              hasHalfStar={hasHalfStar}
-              emptyStars={emptyStars}
-              ratingCount={ratingCount}
-            />
-          )}
+            {isLoading ? (
+              <Skeleton className="h-6 w-32 rounded-full animate-pulse" />
+            ) : (
+              <div className="flex-shrink-0">
+                <StarRating
+                  fullStars={fullStars}
+                  hasHalfStar={hasHalfStar}
+                  emptyStars={emptyStars}
+                  ratingCount={ratingCount}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Price */}
           {isLoading ? (
@@ -196,7 +199,7 @@ const ProductHeader = memo(
 
           {/* Stock Status */}
           {isLoading ? (
-            <Skeleton className="h-6 w-20  rounded-full animate-pulse mt-2" />
+            <Skeleton className="h-6 w-20 rounded-full animate-pulse mt-2" />
           ) : (
             <p
               className={`text-lg font-semibold ${
@@ -211,7 +214,7 @@ const ProductHeader = memo(
           <div className="flex space-x-4 mt-4">
             {isLoading ? (
               <>
-                <Skeleton className="h-10 w-32  rounded-full animate-pulse" />
+                <Skeleton className="h-10 w-32 rounded-full animate-pulse" />
                 <Skeleton className="h-10 w-32 rounded-full animate-pulse" />
               </>
             ) : (
