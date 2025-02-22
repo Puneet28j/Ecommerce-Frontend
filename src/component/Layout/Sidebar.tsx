@@ -4,7 +4,7 @@ import { RootState } from "../../redux/store";
 import NavItem from "./NavItem";
 import { ModeToggle } from "../ModeToggle";
 import { IoIosAnalytics, IoIosFingerPrint } from "react-icons/io";
-import UserAvatar from "./UseAvatar";
+// import UserAvatar from "./UseAvatar";
 import {
   AntennaIcon,
   ListOrderedIcon,
@@ -21,6 +21,7 @@ import { IoGift, IoGiftOutline } from "react-icons/io5";
 import { BiLogoProductHunt } from "react-icons/bi";
 import { Separator } from "../../components/ui/separator";
 import { User } from "../../types/types";
+import UserAvatar from "../UserAvatar";
 
 interface PropsType {
   user: User | null;
@@ -95,6 +96,7 @@ const Sidebar = ({ user }: PropsType) => {
           </button>
         ) : (
           <UserAvatar user={user} />
+          // <UserAvatar user={user} />
         )}
       </nav>
     </aside>

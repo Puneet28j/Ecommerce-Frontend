@@ -48,7 +48,11 @@ export const useReviews = (productId: string) => {
     if (loadMoreRef.current) {
       observerRef.current.observe(loadMoreRef.current);
     }
-  }, [data?.pagination.currentPage, data?.pagination.totalPages, isFetching]);
+  }, [
+    data?.pagination?.currentPage!,
+    data?.pagination?.totalPages!,
+    isFetching,
+  ]);
 
   useEffect(() => {
     setupObserver();
@@ -73,11 +77,11 @@ export const useReviews = (productId: string) => {
     reviews: data?.reviews || [],
     isLoading,
     isFetching,
-    hasMore: data ? page < data.pagination.totalPages : false,
+    hasMore: data ? page < data?.pagination?.totalPages! : false,
     loadMore,
     loadMoreRef,
     refresh: () => setPage(1),
-    pagination: data?.pagination,
+    pagination: data?.pagination!,
   };
 };
 
