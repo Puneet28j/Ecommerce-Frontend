@@ -78,9 +78,9 @@ const UserOrders = () => {
 
   const { isLoading, isFetching } = useOrderPagination(
     queryResult,
-    page,
-    setPage,
-    myOrders,
+    // page,
+    // setPage,
+    // myOrders,
     setMyOrders,
     hasMore,
     setHasMore

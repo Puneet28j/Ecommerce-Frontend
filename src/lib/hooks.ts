@@ -136,9 +136,9 @@ export const useThumbnailScroll = (activeThumb: number) => {
 
 export const useOrderPagination = (
   queryResult: any,
-  page: number,
-  setPage: React.Dispatch<React.SetStateAction<number>>,
-  orders: any[],
+  // page: number,
+  // setPage: React.Dispatch<React.SetStateAction<number>>,
+  // orders: any[],
   setOrders: React.Dispatch<React.SetStateAction<any[]>>,
   hasMore: boolean,
   setHasMore: React.Dispatch<React.SetStateAction<boolean>>
