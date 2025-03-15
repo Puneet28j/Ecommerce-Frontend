@@ -113,7 +113,7 @@ const Shipping = () => {
           required
           value={shippingInfo.country}
           onChange={changeHandler}
-          className="w-full p-2 border border-gray-300 rounded bg-white"
+          className="w-full p-2 border text-black rounded"
         >
           <option value="">Choose Country</option>
           <option value="india">India</option>

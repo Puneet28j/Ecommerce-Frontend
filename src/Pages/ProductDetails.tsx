@@ -165,11 +165,11 @@ const ProductHeader = memo(
         {/* Product Details Section */}
         <div className="flex flex-col sm:max-w-screen-lg sm:mr-8 px-4">
           {/* Product Name & Star Rating */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-2">
             {isLoading ? (
               <Skeleton className="h-9 w-3/4 rounded-full animate-pulse" />
             ) : (
-              <h1 className="text-3xl font-bold text-gray-800 min-w-0">
+              <h1 className="text-3xl font-bold text-gray-800">
                 {product?.name}
               </h1>
             )}

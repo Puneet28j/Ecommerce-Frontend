@@ -3,7 +3,7 @@ import { UserReducerInitialState } from "../../types/reducer-types";
 import { User } from "../../types/types";
 
 const initialState: UserReducerInitialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user") || "null"),
   loading: true,
 };
 export const userReducer = createSlice({
@@ -13,10 +13,13 @@ export const userReducer = createSlice({
     userExist: (state, action: PayloadAction<User>) => {
       state.loading = false;
       state.user = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload)); // Save user to localStorage
     },
+
     userNotExist: (state) => {
       state.loading = false;
       state.user = null;
+      localStorage.removeItem("user"); // Remove user from localStorage
     },
   },
 });

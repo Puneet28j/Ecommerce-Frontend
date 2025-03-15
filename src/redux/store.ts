@@ -9,6 +9,7 @@ import { reviewAPI } from "./api/reviewAPI";
 import { orderReducer } from "./reducer/orderReducer";
 
 export const server = import.meta.env.VITE_SERVER;
+console.log("Server:", server);
 
 export const store = configureStore({
   reducer: {

@@ -10,16 +10,26 @@ const AppContent = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Listen to Firebase Auth State Change
+    // Subscribe to Firebase Auth State changes
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const data = await getUser(user.uid);
-        dispatch(userExist(data?.user));
+        try {
+          const data = await getUser(user?.uid);
+          if (data?.user) {
+            dispatch(userExist(data?.user));
+          } else {
+            dispatch(userNotExist());
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          dispatch(userNotExist());
+        }
       } else {
         dispatch(userNotExist());
       }
     });
 
+    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [dispatch]);
 

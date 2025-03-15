@@ -1,81 +1,61 @@
-"use client";
-
-import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../../components/ui/chart";
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { formatYAxisValue } from "../../../utils/features";
 
-export const description = "A line chart";
+interface RevenueChartProps {
+  data: number[];
+}
 
-export const LineChartCard = ({
-  // title,
-  // description,
-  chartData,
-  chartConfig,
-}: {
-  title: string;
-  description: string;
-  chartData: any;
-  chartConfig: any;
-}) => {
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+export const RevenueChart = ({ data }: RevenueChartProps) => {
+  const chartData = months.map((month, index) => ({
+    month,
+    value: data[index] || 0,
+  }));
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Line Chart</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Line
-              dataKey="desktop"
-              type="natural"
-              stroke="var(--color-desktop)"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
-    </Card>
+    <div className="bg-black p-6 rounded-lg shadow-md">
+      <h3 className="text-lg font-semibold mb-4">Revenue Trend</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis tickFormatter={formatYAxisValue} />
+          <Tooltip
+            formatter={(value) => `$${Number(value).toLocaleString()}`}
+          />
+
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#8884d8"
+            strokeWidth={2}
+            name="Revenue"
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 };

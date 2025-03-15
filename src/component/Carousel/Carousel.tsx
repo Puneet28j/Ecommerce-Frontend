@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "../../components/ui/badge";
 import { CarouselSkeleton } from "../Loader";

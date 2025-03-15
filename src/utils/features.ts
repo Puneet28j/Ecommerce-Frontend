@@ -73,3 +73,11 @@ export const formatOrderDate = (dateString: string) => {
   };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
+
+export const formatYAxisValue = (value: number) => {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(0)}M`; // 1M+
+  if (value >= 100_000) return `${(value / 1_000).toFixed(0)}K`; // 100K+
+  if (value >= 10_000) return `${(value / 1_000).toFixed(0)}K`; // 10K+
+  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`; // 1K+
+  return value.toString(); // Below 1K stays the same
+};

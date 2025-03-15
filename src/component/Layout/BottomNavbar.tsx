@@ -23,7 +23,7 @@ const navConfig: NavItemConfig[] = [
     iconInactive: <GoHome className="size-7" />,
   },
   {
-    to: "/admin/products",
+    to: "/admin/analytics",
     iconActive: <MdSpaceDashboard className="size-7" />,
     iconInactive: <MdOutlineSpaceDashboard className="size-7" />,
   },
@@ -33,7 +33,7 @@ const navConfig: NavItemConfig[] = [
     iconInactive: <MdOutlineSpaceDashboard className="size-7" />,
   },
   {
-    to: "/admin/customers",
+    to: "/admin/orders",
     iconActive: <FaCircleUser className="size-7" />,
     iconInactive: <FaRegCircleUser className="size-7" />,
   },

@@ -61,6 +61,7 @@ export type AllOrdersResponse = {
     currentPage: number;
   };
 };
+
 export type OrderDetailsResponse = {
   success: boolean;
   order: Order;

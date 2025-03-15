@@ -21,6 +21,35 @@ interface ReviewFormProps {
   productRefetch: () => Promise<QueryResultSelectorResult<any>>;
   onReviewSubmitted?: () => void; // New prop to trigger review list refresh
 }
+/** ⭐ Star Rating Component with Accessibility */
+const StarRating = ({
+  rating,
+  setRating,
+}: {
+  rating: number;
+  setRating: (value: number) => void;
+}) => (
+  <div className="flex items-center space-x-2 sm:space-x-4 my-4 justify-center">
+    {[1, 2, 3, 4, 5].map((value) => (
+      <button
+        key={value}
+        type="button"
+        className="transition-transform duration-200 hover:scale-110"
+        onClick={() => setRating(value)}
+        aria-label={`Rate this ${value} star${value > 1 ? "s" : ""}`}
+        aria-pressed={rating === value}
+      >
+        <StarIcon
+          className={`w-8 h-8 sm:w-10 sm:h-10 ${
+            rating >= value
+              ? "text-yellow-500 fill-yellow-500"
+              : "text-gray-300"
+          }`}
+        />
+      </button>
+    ))}
+  </div>
+);
 
 export const ReviewForm: React.FC<ReviewFormProps> = ({
   reviews,
@@ -90,7 +119,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   return (
-    <Card className="max-w-4xl mx-auto mb-4 border-none ">
+    <Card className="max-w-4xl mx-auto mb-4 border-none">
       <CardHeader>
         <h2 className="text-lg font-bold dark:text-white text-black font-primary">
           {existingReview ? "Update Your Review" : "Write a Review"}
@@ -109,6 +138,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             onChange={(e) => setComment(e.target.value)}
             rows={4}
             className="w-full p-3 border rounded-md"
+            aria-required="true"
           />
         </div>
       </CardContent>
@@ -121,6 +151,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           type="submit"
           onClick={handleSubmit}
           disabled={isCreating || isUpdating || !rating}
+          aria-busy={isCreating || isUpdating}
+          aria-disabled={isCreating || isUpdating}
         >
           {existingReview ? "Update Review" : "Submit Review"}
           {(isCreating || isUpdating) && (
@@ -132,56 +164,30 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   );
 };
 
-/** ⭐ Star Rating Component */
-const StarRating = ({
-  rating,
-  setRating,
-}: {
-  rating: number;
-  setRating: (value: number) => void;
-}) => (
-  <div className="flex items-center space-x-2 sm:space-x-4 my-4 justify-center">
-    {[1, 2, 3, 4, 5].map((value) => (
-      <button
-        key={value}
-        type="button"
-        className="transition-transform duration-200 hover:scale-110"
-        onClick={() => setRating(value)}
-      >
-        <StarIcon
-          className={`w-8 h-8 sm:w-10 sm:h-10 ${
-            rating >= value
-              ? "text-yellow-500 fill-yellow-500"
-              : "text-gray-300"
-          }`}
-        />
-      </button>
-    ))}
-  </div>
-);
-
-/** 💀 Skeleton Loading State */
+/** 💀 Skeleton Loading State with Accessibility */
 export const ReviewFormSkeleton = () => {
   return (
-    <Card className="max-w-4xl mx-auto mb-4">
+    <Card className="max-w-4xl mx-auto mb-4" role="status" aria-live="polite">
       <CardHeader>
-        <Skeleton className="h-6 w-40 rounded-md" />
+        <Skeleton className="h-6 w-40 rounded-md" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-2 sm:space-x-4 my-4 justify-center">
           {[...Array(5)].map((_, i) => (
-            // <StarIcon className={`w-8 h-8 sm:w-10 sm:h-10`}>
-            <Skeleton key={i} className="h-8 w-8 rounded-full" />
-            // </StarIcon>
+            <Skeleton
+              key={i}
+              className="h-8 w-8 rounded-full"
+              aria-hidden="true"
+            />
           ))}
         </div>
         <div>
-          <Skeleton className="h-5 w-28 mb-2 rounded-md" />
-          <Skeleton className="h-24 w-full rounded-md" />
+          <Skeleton className="h-5 w-28 mb-2 rounded-md" aria-hidden="true" />
+          <Skeleton className="h-24 w-full rounded-md" aria-hidden="true" />
         </div>
       </CardContent>
       <CardFooter>
-        <Skeleton className="h-10 w-full rounded-lg" />
+        <Skeleton className="h-10 w-full rounded-lg" aria-hidden="true" />
       </CardFooter>
     </Card>
   );

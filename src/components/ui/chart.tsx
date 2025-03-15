@@ -192,7 +192,7 @@ const ChartTooltipContent = React.forwardRef<
               <div
                 key={item.dataKey}
                 className={cn(
-                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
+                  "flex w-full flex-wrap items-center gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
                   indicator === "dot" && "items-center"
                 )}
               >
@@ -224,22 +224,20 @@ const ChartTooltipContent = React.forwardRef<
                         />
                       )
                     )}
-                    <div
-                      className={cn(
-                        "flex flex-1 justify-between leading-none",
-                        nestLabel ? "items-end" : "items-center"
-                      )}
-                    >
-                      <div className="grid gap-1.5">
+                    {/* Updated layout for key-value pair */}
+                    <div className="flex flex-1 items-center justify-between leading-none">
+                      {/* Key / label with fixed minimum width */}
+                      <div className="min-w-[80px] text-muted-foreground">
                         {nestLabel ? tooltipLabel : null}
-                        <span className="text-muted-foreground">
-                          {itemConfig?.label || item.name}
-                        </span>
+                        {itemConfig?.label || item.name}
                       </div>
-                      {item.value && (
-                        <span className="font-mono font-medium tabular-nums text-foreground">
-                          {item.value.toLocaleString()}
-                        </span>
+                      {/* Value container with padding to maintain spacing */}
+                      {item.value !== undefined && (
+                        <div className="flex-1 text-right pl-2">
+                          <span className="font-mono font-medium tabular-nums text-foreground">
+                            {item.value.toLocaleString("en-IN")}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </>

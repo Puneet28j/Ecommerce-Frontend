@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { getUser, userAPI } from "../redux/api/userAPI";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-
 import toast from "react-hot-toast";
 import { userExist, userNotExist } from "../redux/reducer/userReducer";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -29,47 +28,56 @@ import { Input } from "../components/ui/input";
 const Login = () => {
   const dispatch = useDispatch();
   const [gender, setGender] = useState("");
-  const [date, setDate] = useState("");
+  const [dob, setDob] = useState("");
 
   const [login] = userAPI.useLoginMutation();
 
-  const loginHandler = async () => {
+  const loginHandler = useCallback(async () => {
     try {
       const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const { displayName, email, photoURL, uid } = result.user;
 
       const res = await login({
-        name: user.displayName!,
-        email: user.email!,
-        photo: user.photoURL!,
+        name: displayName || "No Name",
+        email: email || "",
+        photo: photoURL || "",
         gender,
         role: "user",
-        dob: date,
-        _id: user.uid,
+        dob,
+        _id: uid,
       });
 
       if ("data" in res) {
         toast.success(res.data.message);
-        const data = await getUser(user.uid);
-        dispatch(userExist(data?.user!));
+        const userData = await getUser(uid);
+        if (userData?.user) {
+          dispatch(userExist(userData.user));
+
+          // ✅ Store the user in localStorage for persistence
+          localStorage.setItem("user", JSON.stringify(userData.user));
+        }
       } else {
         const error = res.error as FetchBaseQueryError;
-        const message = (error.data as MessageResponse).message;
+        const message =
+          ((error.data as MessageResponse)?.message as string) ||
+          "Login failed";
         toast.error(message);
         dispatch(userNotExist());
       }
     } catch (error) {
-      toast.error("Sign In Fail");
+      toast.error("Sign In Failed");
     }
-  };
+  }, [gender, dob, login, dispatch]);
+
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <Card className="w-64 md:w-80 h-auto p-4 shadow-lg bg-white">
+      <Card className="w-64 md:w-80 p-4 shadow-lg bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-semibold">Login</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Select onValueChange={(value) => setGender(value)}>
+          <Select onValueChange={setGender}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Gender" />
             </SelectTrigger>
@@ -83,8 +91,8 @@ const Login = () => {
             <Label className="block mb-1">Date of Birth</Label>
             <Input
               type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
               className="w-full"
             />
           </div>

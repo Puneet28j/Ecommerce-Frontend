@@ -1,14 +1,14 @@
 import { memo } from "react";
-
+import { Order } from "../types/types";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../components/ui/accordion";
-import { Badge } from "../../components/ui/badge";
-import { Card } from "../../components/ui/card";
-import { Order } from "../../types/types";
-import OrderDetails from "./OrderDetails";
+} from "../components/ui/accordion";
+// import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Badge } from "../components/ui/badge";
+import { OrderDetails } from "./OrderDetails";
+import { Card } from "../components/ui/card";
 
 interface OrderItemProps {
   order: Order;
@@ -18,7 +18,7 @@ interface OrderItemProps {
   onCopyOrderId: (orderId: string) => void;
 }
 
-const OrderItem = memo(
+export const OrderItem = memo(
   ({
     order,
     isLast,
@@ -26,8 +26,6 @@ const OrderItem = memo(
     copiedOrderId,
     onCopyOrderId,
   }: OrderItemProps) => {
-    // const [isOpen, setIsOpen] = useState(false);
-
     const getStatusStyle = (status: string) => {
       const statusMap: Record<string, string> = {
         Delivered: "bg-green-700",
@@ -36,8 +34,10 @@ const OrderItem = memo(
       };
       return statusMap[status] || "bg-purple-400";
     };
-    const visibleItems = order.orderItems.slice(0, 4);
-    const remaining = Math.max(order.orderItems.length - 4, 0);
+
+    const visibleItems = order.orderItems.slice(0, 3);
+    const remaining = Math.max(order.orderItems.length - 3, 0);
+
     return (
       <Card className="border-none">
         <AccordionItem
@@ -45,7 +45,7 @@ const OrderItem = memo(
           ref={isLast ? lastOrderRef : null}
           className="border-none"
         >
-          <AccordionTrigger className="hover:no-underline ">
+          <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
                 <div className="relative flex gap-1">
@@ -55,23 +55,19 @@ const OrderItem = memo(
                       typeof item.productId === "object" && (
                         <img
                           key={item._id}
-                          src={item.productId.photo[0]?.url}
+                          src={item.productId.photoUrl}
                           alt={item.name}
                           className={`w-20 h-20 object-cover rounded-full border-2 overflow-hidden ${
                             index > 0 ? "-ml-6" : ""
-                          }`} // Stack effect
-                          style={{
-                            zIndex: order.orderItems.length - index,
-                          }}
+                          }`}
+                          style={{ zIndex: order.orderItems.length - index }}
                         />
                       )
                   )}
                   {remaining > 0 && (
                     <div
-                      className="w-20 h-20 rounded-full -ml-6 flex items-center justify-center bg-slate-300  border-2 text-xs font-semibold"
-                      style={{
-                        zIndex: order.orderItems.length + 1, // Ensure it's always on top
-                      }}
+                      className="flex justify-center items-center text-xs"
+                      style={{ zIndex: order.orderItems.length + 1 }}
                     >
                       +{remaining}
                     </div>
@@ -79,7 +75,7 @@ const OrderItem = memo(
                 </div>
               </div>
               <div className="text-right">
-                <h3 className="text-sm font-semibold ">
+                <h3 className="text-sm font-semibold">
                   Order #{order._id.slice(-6)}
                 </h3>
                 <div className="text-xl font-extrabold">₹ {order.total}</div>
@@ -93,13 +89,12 @@ const OrderItem = memo(
               </div>
             </div>
           </AccordionTrigger>
-
-          {/* Accordion - Order Details Section */}
           <AccordionContent>
             <OrderDetails
               order={order}
               copiedOrderId={copiedOrderId}
               onCopyOrderId={onCopyOrderId}
+              showTax
             />
           </AccordionContent>
         </AccordionItem>
@@ -107,5 +102,3 @@ const OrderItem = memo(
     );
   }
 );
-
-export default OrderItem;

@@ -1,5 +1,3 @@
-import { PopulatedDoc } from "mongoose";
-
 export type User = {
   name: string;
   email: string;
@@ -67,7 +65,14 @@ export type CartItem = {
 };
 
 export type OrderItem = {
-  productId: PopulatedDoc<Product & Document>;
+  productId: {
+    photoUrl: string;
+    name: string;
+    price: number;
+    quantity: number;
+    stock: number;
+    _id: string;
+  };
 
   name: string;
   price: number;
@@ -92,10 +97,26 @@ export type Order = {
 };
 
 type CountAndChange = {
-  revenue: number;
-  product: number;
-  user: number;
-  order: number;
+  revenue: {
+    total: number;
+    lastMonth: number;
+    thisMonth: number;
+  };
+  product: {
+    total: number;
+    lastMonth: number;
+    thisMonth: number;
+  };
+  user: {
+    total: number;
+    lastMonth: number;
+    thisMonth: number;
+  };
+  order: {
+    total: number;
+    lastMonth: number;
+    thisMonth: number;
+  };
 };
 
 type LatestTransaction = {
@@ -106,9 +127,15 @@ type LatestTransaction = {
   status: string;
 };
 
+type ChangePercent = {
+  revenue: number;
+  product: number;
+  user: number;
+  order: number;
+};
 export type Stats = {
   categoryCount: Record<string, number>[];
-  changePercent: CountAndChange;
+  changePercent: ChangePercent;
   count: CountAndChange;
   chart: {
     order: number[];

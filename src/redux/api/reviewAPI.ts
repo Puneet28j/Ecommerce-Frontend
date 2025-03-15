@@ -1,25 +1,24 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Product } from "../../types/types";
-// import { useSelector } from "react-redux";
-// import { UserReducerInitialState } from "../../types/reducer-types";
+import type { RootState } from "../../redux/store";
 
 export interface Review {
-  _id: string; // Optional for creation
+  _id: string;
   user: {
+    _id: string;
     name: string;
     email: string;
     photo: string;
-    _id: string;
   };
   product: Product;
   rating: number;
   comment?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ReviewRequest {
-  _id?: string; // Optional for creation
+  _id?: string;
   productId?: string;
   userId?: string;
   rating?: number;
@@ -57,8 +56,10 @@ export const reviewAPI = createApi({
   }),
   tagTypes: ["Reviews", "Product"],
   endpoints: (builder) => ({
-    // Update an existing review
-    updateReview: builder.mutation({
+    updateReview: builder.mutation<
+      UpdateReviewResponse,
+      { productId: string; rating: number; comment?: string; userId: string }
+    >({
       query: ({ productId, rating, comment, userId }) => ({
         url: "update",
         method: "PUT",
@@ -72,7 +73,6 @@ export const reviewAPI = createApi({
         { productId, rating, comment, userId },
         { dispatch, queryFulfilled }
       ) {
-        // Optimistic Update: Update the cache before the server response
         const patchResult = dispatch(
           reviewAPI.util.updateQueryData(
             "getReviews",
@@ -82,18 +82,17 @@ export const reviewAPI = createApi({
                 (review) => review.user._id === userId
               );
               if (reviewIndex !== -1) {
-                // Update the existing review
                 draft.reviews[reviewIndex].rating = rating;
                 draft.reviews[reviewIndex].comment = comment || "";
+                draft.reviews[reviewIndex].updatedAt = new Date().toISOString();
               }
             }
           )
         );
-
         try {
           await queryFulfilled;
         } catch {
-          patchResult.undo(); // Roll back if the server request fails
+          patchResult.undo();
         }
       },
     }),
@@ -107,16 +106,14 @@ export const reviewAPI = createApi({
         { type: "Reviews", id: productId },
         { type: "Product", id: productId },
       ],
-      // Merge function for better pagination handling
-      serializeQueryArgs: ({ queryArgs }) => {
-        // Use productId as cache key to enable pagination
-        return { productId: queryArgs.productId };
-      },
+      // Use productId as cache key for pagination
+      serializeQueryArgs: ({ queryArgs }) => ({
+        productId: queryArgs.productId,
+      }),
       merge: (currentCache, newItems, { arg }) => {
         if (arg.page === 1) {
           return newItems;
         }
-
         return {
           ...newItems,
           reviews: [
@@ -130,14 +127,13 @@ export const reviewAPI = createApi({
           ],
         };
       },
-      // Force refetch only when page changes
+      // Refetch when the page number changes
       forceRefetch({ currentArg, previousArg }) {
         return currentArg?.page !== previousArg?.page;
       },
     }),
 
-    // Delete Review Endpoint
-    deleteReview: builder.mutation({
+    deleteReview: builder.mutation<any, { productId: string; userId: string }>({
       query: ({ productId, userId }) => ({
         url: `delete`,
         method: "DELETE",
@@ -151,7 +147,6 @@ export const reviewAPI = createApi({
         { productId, userId },
         { dispatch, queryFulfilled }
       ) {
-        // Optimistic Update: Remove the review from the cache
         const patchResult = dispatch(
           reviewAPI.util.updateQueryData(
             "getReviews",
@@ -163,17 +158,18 @@ export const reviewAPI = createApi({
             }
           )
         );
-
         try {
           await queryFulfilled;
         } catch {
-          patchResult.undo(); // Roll back if the server request fails
+          patchResult.undo();
         }
       },
     }),
 
-    // Add Review Endpoint
-    createReview: builder.mutation({
+    createReview: builder.mutation<
+      CreateReviewResponse,
+      { productId: string; userId: string; rating: number; comment?: string }
+    >({
       query: ({ productId, userId, rating, comment }) => ({
         url: `new`,
         method: "POST",
@@ -185,22 +181,26 @@ export const reviewAPI = createApi({
       ],
       async onQueryStarted(
         { productId, userId, rating, comment },
-        { dispatch, queryFulfilled }
+        { dispatch, getState, queryFulfilled }
       ) {
-        // Optimistic Update: Add the new review to the cache
+        // Retrieve user details from the global state for the optimistic update
+        const state = getState() as RootState;
+        const user = state.userReducer.user;
+        const optimisticUser = {
+          _id: userId,
+          name: user?.name || "Anonymous", // Show actual name if available
+          email: user?.email || "",
+          photo: user?.photo || "",
+        };
+
         const patchResult = dispatch(
           reviewAPI.util.updateQueryData(
             "getReviews",
             { productId },
             (draft) => {
               draft.reviews.unshift({
-                _id: "temp-id", // Temporary ID for optimistic update
-                user: {
-                  _id: userId,
-                  name: "user?.name!",
-                  email: "user?.email!",
-                  photo: "user?.photo!",
-                }, // Adjust user details as needed
+                _id: `temp-${new Date().getTime()}`, // Generate a unique temporary ID
+                user: optimisticUser,
                 product: { _id: productId } as Product,
                 rating,
                 comment: comment || "",
@@ -214,7 +214,7 @@ export const reviewAPI = createApi({
         try {
           await queryFulfilled;
         } catch {
-          patchResult.undo(); // Roll back if the server request fails
+          patchResult.undo();
         }
       },
     }),

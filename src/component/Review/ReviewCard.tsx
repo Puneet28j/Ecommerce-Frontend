@@ -11,17 +11,20 @@ interface ReviewCardProps {
 }
 
 export const ReviewCard = memo(({ review, role }: ReviewCardProps) => {
-  const createdDate = new Date(review.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    return isNaN(date.getTime())
+      ? "Invalid Date"
+      : date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+  };
 
-  const updatedDate = new Date(review.updatedAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const createdDate = formatDate(review.createdAt);
+  const updatedDate = formatDate(review.updatedAt);
 
   const isEdited = review.updatedAt !== review.createdAt;
   return (
@@ -31,7 +34,11 @@ export const ReviewCard = memo(({ review, role }: ReviewCardProps) => {
       aria-labelledby={`review-author-${review.user._id}`}
     >
       <div className="flex gap-4 font-primary">
-        <UserAvatar user={review.user} />
+        <UserAvatar
+          name={review.user.name}
+          photo={review.user.photo}
+          className="w-12 h-12"
+        />
         <div className="flex-1 space-y-1">
           <header className="flex items-center justify-between">
             <h3

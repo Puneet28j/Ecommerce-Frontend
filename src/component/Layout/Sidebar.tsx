@@ -3,100 +3,158 @@ import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux/store";
 import NavItem from "./NavItem";
 import { ModeToggle } from "../ModeToggle";
-import { IoIosAnalytics, IoIosFingerPrint } from "react-icons/io";
-// import UserAvatar from "./UseAvatar";
-import {
-  AntennaIcon,
-  ListOrderedIcon,
-  LucideLayoutDashboard,
-  LucideShoppingBasket,
-  Search,
-  UserCheck,
-  UserCheck2Icon,
-} from "lucide-react";
-import { GoHomeFill, GoHome } from "react-icons/go";
-import { MdOutlineSpaceDashboard, MdSpaceDashboard } from "react-icons/md";
-import { RiShoppingBag4Fill, RiShoppingBag4Line } from "react-icons/ri";
-import { IoGift, IoGiftOutline } from "react-icons/io5";
-import { BiLogoProductHunt } from "react-icons/bi";
+import { motion } from "framer-motion";
 import { Separator } from "../../components/ui/separator";
 import { User } from "../../types/types";
 import UserAvatar from "../UserAvatar";
 
+// Icon Imports (common)
+import { GoHomeFill, GoHome } from "react-icons/go";
+import { Search } from "lucide-react";
+import { RiShoppingBag4Fill, RiShoppingBag4Line } from "react-icons/ri";
+import { IoGift, IoGiftOutline } from "react-icons/io5";
+
+// Icon Imports (admin)
+import {
+  MdSpaceDashboard,
+  MdOutlineSpaceDashboard,
+  MdOutlineAnalytics,
+} from "react-icons/md";
+import {
+  ListOrderedIcon,
+  LucideShoppingBasket,
+  LucideLayoutDashboard,
+} from "lucide-react";
+import { BiLogoProductHunt } from "react-icons/bi";
+import { UserCheck, UserCheck2Icon } from "lucide-react";
+
+// Other icons
+import { IoIosAnalytics, IoIosFingerPrint } from "react-icons/io";
+
 interface PropsType {
   user: User | null;
+  loading: boolean;
 }
 
-const Sidebar = ({ user }: PropsType) => {
+const Sidebar = ({ user, loading }: PropsType) => {
   const navigate = useNavigate();
   const { cartItems } = useSelector((state: RootState) => state.cartReducer);
+
+  // Define common navigation items
+  const commonNavItems = [
+    {
+      path: "/",
+      activeIcon: <GoHomeFill className="w-8 h-8" />,
+      inactiveIcon: <GoHome className="w-8 h-8" />,
+    },
+    {
+      path: "/search",
+      activeIcon: (
+        <Search strokeWidth={3} absoluteStrokeWidth className="w-8 h-8" />
+      ),
+      inactiveIcon: <Search className="w-8 h-8" />,
+    },
+    {
+      path: "/cart",
+      activeIcon: <RiShoppingBag4Fill className="w-8 h-8" />,
+      inactiveIcon: <RiShoppingBag4Line className="w-8 h-8" />,
+      badgeCount: cartItems.length,
+    },
+    {
+      path: "/orders",
+      activeIcon: <IoGift className="w-8 h-8" />,
+      inactiveIcon: <IoGiftOutline className="w-8 h-8" />,
+    },
+  ];
+
+  // Define admin navigation items
+  const adminNavItems = [
+    {
+      path: "/admin/dashboard",
+      activeIcon: <MdSpaceDashboard className="w-8 h-8" />,
+      inactiveIcon: <MdOutlineSpaceDashboard className="w-8 h-8" />,
+    },
+    {
+      path: "/admin/orders",
+      activeIcon: <ListOrderedIcon className="w-8 h-8" />,
+      inactiveIcon: <LucideShoppingBasket className="w-8 h-8" />,
+    },
+    {
+      path: "/admin/products",
+      activeIcon: <BiLogoProductHunt className="w-8 h-8" />,
+      inactiveIcon: <LucideLayoutDashboard className="w-8 h-8" />,
+    },
+    {
+      path: "/admin/customers",
+      activeIcon: <UserCheck2Icon className="w-8 h-8" />,
+      inactiveIcon: <UserCheck className="w-8 h-8" />,
+    },
+    {
+      path: "/admin/analytics",
+      activeIcon: <IoIosAnalytics strokeWidth={3} className="w-8 h-8" />,
+      inactiveIcon: <MdOutlineAnalytics className="w-8 h-8" />,
+    },
+  ];
 
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <nav className="flex flex-col items-center gap-0 px-2 sm:py-5 space-y-5">
-        <NavItem
-          to="/"
-          iconActive={<GoHomeFill className="size-8" />}
-          iconInactive={<GoHome className="size-8" />}
-        />
-        <NavItem
-          to="/search"
-          iconActive={
-            <Search strokeWidth={3} absoluteStrokeWidth className="size-8" />
-          }
-          iconInactive={<Search className="size-8" />}
-        />
-        <NavItem
-          to="/cart"
-          iconActive={<RiShoppingBag4Fill className="size-8" />}
-          iconInactive={<RiShoppingBag4Line className="size-8" />}
-          badgeCount={cartItems.length}
-        />
-        <NavItem
-          to="/orders"
-          iconActive={<IoGift className="size-8" />}
-          iconInactive={<IoGiftOutline className="size-8" />}
-        />
-        {user && user.role === "admin" && (
+        {commonNavItems.map(
+          ({ path, activeIcon, inactiveIcon, badgeCount }) => (
+            <NavItem
+              key={path}
+              to={path}
+              iconActive={activeIcon}
+              iconInactive={inactiveIcon}
+              badgeCount={badgeCount}
+            />
+          )
+        )}
+
+        {/* Render admin nav items only for admin users */}
+        {user?.role === "admin" && (
           <>
             <Separator />
-            <NavItem
-              to="/admin/dashboard"
-              iconActive={<MdSpaceDashboard className="size-8" />}
-              iconInactive={<MdOutlineSpaceDashboard className="size-8" />}
-            />
-            <NavItem
-              to="/admin/orders"
-              iconActive={<ListOrderedIcon className="size-8" />}
-              iconInactive={<LucideShoppingBasket className="size-8" />}
-            />
-            <NavItem
-              to="/admin/products"
-              iconActive={<BiLogoProductHunt className="size-8" />}
-              iconInactive={<LucideLayoutDashboard className="size-8" />}
-            />
-            <NavItem
-              to="/admin/customers"
-              iconActive={<UserCheck2Icon className="size-8" />}
-              iconInactive={<UserCheck className="size-8" />}
-            />
-            <NavItem
-              to="/admin/analytics"
-              iconActive={<AntennaIcon className="size-8" />}
-              iconInactive={<IoIosAnalytics className="size-8" />}
-            />
+            {adminNavItems.map(({ path, activeIcon, inactiveIcon }) => (
+              <NavItem
+                key={path}
+                to={path}
+                iconActive={activeIcon}
+                iconInactive={inactiveIcon}
+              />
+            ))}
           </>
         )}
       </nav>
+
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
         <ModeToggle />
-        {!user?._id ? (
+
+        {loading ? (
+          // Animated Skeleton Loader
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="h-10 w-10 rounded-full bg-gray-700 animate-pulse"
+          />
+        ) : !user?._id ? (
           <button onClick={() => navigate("/login")}>
-            <IoIosFingerPrint className="h-10 w-10 cursor-pointer" />
+            <IoIosFingerPrint className="h-10 w-10 cursor-pointer text-gray-400 hover:text-gray-300 transition-all" />
           </button>
         ) : (
-          <UserAvatar user={user} />
-          // <UserAvatar user={user} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <UserAvatar
+              moreInfo
+              email={user.email}
+              name={user.name}
+              photo={user.photo}
+            />
+          </motion.div>
         )}
       </nav>
     </aside>
