@@ -367,3 +367,39 @@ export const useOrderTableState = () => {
     handleTotalRangeChange,
   };
 };
+
+export const useFilterReset = ({
+  searchQuery,
+  statusFilter,
+  dateRange,
+  totalRange,
+  resetCallbacks,
+}: {
+  searchQuery: string;
+  statusFilter: string;
+  dateRange: { from: string; to: string };
+  totalRange: { min: string; max: string };
+  resetCallbacks: {
+    search: () => void;
+    status: () => void;
+    date: () => void;
+    total: () => void;
+  };
+}) => {
+  const hasActiveFilters =
+    searchQuery !== "" ||
+    statusFilter !== "all" ||
+    dateRange.from !== "" ||
+    dateRange.to !== "" ||
+    totalRange.min !== "" ||
+    totalRange.max !== "";
+
+  const resetAll = () => {
+    resetCallbacks.search();
+    resetCallbacks.status();
+    resetCallbacks.date();
+    resetCallbacks.total();
+  };
+
+  return { hasActiveFilters, resetAll };
+};

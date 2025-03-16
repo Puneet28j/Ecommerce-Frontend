@@ -45,6 +45,7 @@ const OrdersTable = () => {
     handleSearchChange,
     handleDateChange,
     handleStatusChange,
+    handleTotalRangeChange,
   } = useOrderTableState();
 
   // Orders query params
@@ -127,8 +128,9 @@ const OrdersTable = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Order Management</h1>
       </div>
-
       <TableFilters
+        totalRange={totalRange}
+        onTotalRangeChange={handleTotalRangeChange}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         statusFilter={
