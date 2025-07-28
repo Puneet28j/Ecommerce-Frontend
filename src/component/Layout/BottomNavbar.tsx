@@ -142,7 +142,7 @@ const BottomNavbar: React.FC = () => {
       }`}
     >
       <nav className="flex justify-around py-3">
-        {navItems.map(({ to, iconActive, iconInactive, showBadge }, i) => (
+        {navItems.map(({ to, iconActive, iconInactive, showBadge }) => (
           <NavItem
             key={to}
             to={to}

@@ -87,7 +87,7 @@ const PieChartCard = ({
   config,
   dataKey,
   nameKey,
-  trend = 0,
+  // trend = 0,
   // footerNote,
   legend = true,
   innerRadius = 60,
