@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { formatYAxisValue } from "../../../utils/features";
+import { ChartConfig } from "@/components/ui/chart";
 
 interface RevenueChartProps {
   data: number[];
@@ -58,4 +59,34 @@ export const RevenueChart = ({ data }: RevenueChartProps) => {
       </ResponsiveContainer>
     </div>
   );
+};
+
+export const generateProductCategoriesConfig = (
+  productCategories: Record<string, number>
+) => {
+  const colors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+  ];
+
+  const config: ChartConfig = {
+    value: { label: "Product Categories" },
+  };
+
+  Object.keys(productCategories).forEach((category, index) => {
+    // Format category names for display
+    const formattedLabel = category
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
+
+    config[category] = {
+      label: formattedLabel,
+      color: colors[index % colors.length],
+    };
+  });
+
+  return config;
 };

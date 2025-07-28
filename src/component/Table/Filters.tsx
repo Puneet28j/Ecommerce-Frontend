@@ -11,6 +11,9 @@ import StatusFilter from "./StatusFilter";
 import { TotalRangeFilter } from "./TotalRangePicker";
 import { SearchFilterWithDebounce } from "./SearchFilterWithDebounce";
 
+const MIN_FILTER_VALUE = 0;
+const MAX_FILTER_VALUE = 100000;
+
 interface FiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -56,7 +59,8 @@ export const TableFilters: React.FC<FiltersProps> = ({
           <SearchFilterWithDebounce
             value={searchQuery}
             onChange={onSearchChange}
-            className="sm:col-span-2 lg:flex-1 max-w-sm"
+            placeholder="Search..."
+            className="sm:col-span-2 lg:flex-1  "
           />
 
           <StatusFilter
@@ -70,11 +74,14 @@ export const TableFilters: React.FC<FiltersProps> = ({
             onChange={onDateChange}
             className="w-full sm:w-auto"
           />
-
           <TotalRangeFilter
             value={totalRange}
             onChange={onTotalRangeChange}
-            className="w-full sm:w-auto"
+            min={MIN_FILTER_VALUE}
+            max={MAX_FILTER_VALUE}
+            step={500}
+            label="Total Range"
+            currencySymbol={<span className="text-sm">₹</span>}
           />
 
           <DesktopResetButton

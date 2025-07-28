@@ -60,7 +60,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   const { user } = useSelector((state: RootState) => state.userReducer);
 
   const existingReview = reviews?.find(
-    (review) => review.user._id === user?._id
+    (review) => review?.user?._id === user?._id
   );
 
   const [rating, setRating] = useState(existingReview?.rating || 1);

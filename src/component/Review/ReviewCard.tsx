@@ -26,35 +26,35 @@ export const ReviewCard = memo(({ review, role }: ReviewCardProps) => {
   const createdDate = formatDate(review.createdAt);
   const updatedDate = formatDate(review.updatedAt);
 
-  const isEdited = review.updatedAt !== review.createdAt;
+  const isEdited = review?.updatedAt !== review?.createdAt;
   return (
     <article
       role={role}
       className="group border-b border-gray-800 last:border-0 bg-black p-4 hover:bg-gray-800/30 transition-colors rounded-lg"
-      aria-labelledby={`review-author-${review.user._id}`}
+      aria-labelledby={`review-author-${review?.user?._id}`}
     >
       <div className="flex gap-4 font-primary">
         <UserAvatar
-          name={review.user.name}
-          photo={review.user.photo}
+          name={review?.user?.name}
+          photo={review?.user?.photo}
           className="w-12 h-12"
         />
         <div className="flex-1 space-y-1">
           <header className="flex items-center justify-between">
             <h3
-              id={`review-author-${review.user._id}`}
+              id={`review-author-${review?.user?._id}`}
               className="font-semibold text-white text-lg"
             >
-              {review.user.name}
+              {review?.user?.name}
             </h3>
             <time
-              dateTime={review.updatedAt}
+              dateTime={review?.updatedAt}
               className="text-sm font-thin text-gray-400 mt-1 sm:mt-0"
             >
               {isEdited ? `${updatedDate} (Edited)` : createdDate}
             </time>
           </header>
-          <StarRating rating={review.rating} />
+          <StarRating rating={review?.rating} />
           <ReadMore
             text={review?.comment!}
             maxLengthDesktop={80}

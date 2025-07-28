@@ -8,28 +8,20 @@ import { Separator } from "../../components/ui/separator";
 import { User } from "../../types/types";
 import UserAvatar from "../UserAvatar";
 
-// Icon Imports (common)
-import { GoHomeFill, GoHome } from "react-icons/go";
-import { Search } from "lucide-react";
-import { RiShoppingBag4Fill, RiShoppingBag4Line } from "react-icons/ri";
-import { IoGift, IoGiftOutline } from "react-icons/io5";
-
-// Icon Imports (admin)
+// Icon Imports
 import {
-  MdSpaceDashboard,
-  MdOutlineSpaceDashboard,
-  MdOutlineAnalytics,
-} from "react-icons/md";
-import {
-  ListOrderedIcon,
-  LucideShoppingBasket,
-  LucideLayoutDashboard,
+  HomeIcon,
+  SearchIcon,
+  ShoppingBagIcon,
+  LayoutDashboardIcon,
+  PackageIcon,
+  ShoppingCartIcon,
+  UsersIcon,
+  BarChart3Icon,
+  TagsIcon,
+  PackageOpenIcon,
 } from "lucide-react";
-import { BiLogoProductHunt } from "react-icons/bi";
-import { UserCheck, UserCheck2Icon } from "lucide-react";
-
-// Other icons
-import { IoIosAnalytics, IoIosFingerPrint } from "react-icons/io";
+import { IoIosFingerPrint } from "react-icons/io";
 
 interface PropsType {
   user: User | null;
@@ -44,26 +36,24 @@ const Sidebar = ({ user, loading }: PropsType) => {
   const commonNavItems = [
     {
       path: "/",
-      activeIcon: <GoHomeFill className="w-8 h-8" />,
-      inactiveIcon: <GoHome className="w-8 h-8" />,
+      activeIcon: <HomeIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <HomeIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
     {
       path: "/search",
-      activeIcon: (
-        <Search strokeWidth={3} absoluteStrokeWidth className="w-8 h-8" />
-      ),
-      inactiveIcon: <Search className="w-8 h-8" />,
+      activeIcon: <SearchIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <SearchIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
     {
       path: "/cart",
-      activeIcon: <RiShoppingBag4Fill className="w-8 h-8" />,
-      inactiveIcon: <RiShoppingBag4Line className="w-8 h-8" />,
+      activeIcon: <ShoppingBagIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <ShoppingBagIcon strokeWidth={1.5} className="w-6 h-6" />,
       badgeCount: cartItems.length,
     },
     {
       path: "/orders",
-      activeIcon: <IoGift className="w-8 h-8" />,
-      inactiveIcon: <IoGiftOutline className="w-8 h-8" />,
+      activeIcon: <PackageOpenIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <PackageOpenIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
   ];
 
@@ -71,28 +61,35 @@ const Sidebar = ({ user, loading }: PropsType) => {
   const adminNavItems = [
     {
       path: "/admin/dashboard",
-      activeIcon: <MdSpaceDashboard className="w-8 h-8" />,
-      inactiveIcon: <MdOutlineSpaceDashboard className="w-8 h-8" />,
+      activeIcon: <LayoutDashboardIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: (
+        <LayoutDashboardIcon strokeWidth={1.5} className="w-6 h-6" />
+      ),
     },
     {
       path: "/admin/orders",
-      activeIcon: <ListOrderedIcon className="w-8 h-8" />,
-      inactiveIcon: <LucideShoppingBasket className="w-8 h-8" />,
+      activeIcon: <PackageIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <PackageIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
     {
       path: "/admin/products",
-      activeIcon: <BiLogoProductHunt className="w-8 h-8" />,
-      inactiveIcon: <LucideLayoutDashboard className="w-8 h-8" />,
+      activeIcon: <ShoppingCartIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <ShoppingCartIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
     {
       path: "/admin/customers",
-      activeIcon: <UserCheck2Icon className="w-8 h-8" />,
-      inactiveIcon: <UserCheck className="w-8 h-8" />,
+      activeIcon: <UsersIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <UsersIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
     {
       path: "/admin/analytics",
-      activeIcon: <IoIosAnalytics strokeWidth={3} className="w-8 h-8" />,
-      inactiveIcon: <MdOutlineAnalytics className="w-8 h-8" />,
+      activeIcon: <BarChart3Icon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <BarChart3Icon strokeWidth={1.5} className="w-6 h-6" />,
+    },
+    {
+      path: "/admin/coupon",
+      activeIcon: <TagsIcon strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <TagsIcon strokeWidth={1.5} className="w-6 h-6" />,
     },
   ];
 
@@ -130,32 +127,38 @@ const Sidebar = ({ user, loading }: PropsType) => {
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
         <ModeToggle />
 
-        {loading ? (
-          // Animated Skeleton Loader
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="h-10 w-10 rounded-full bg-gray-700 animate-pulse"
-          />
-        ) : !user?._id ? (
-          <button onClick={() => navigate("/login")}>
-            <IoIosFingerPrint className="h-10 w-10 cursor-pointer text-gray-400 hover:text-gray-300 transition-all" />
-          </button>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
-            <UserAvatar
-              moreInfo
-              email={user.email}
-              name={user.name}
-              photo={user.photo}
+        {/* Add a wrapper div with fixed height */}
+        <div className="h-10 w-10">
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="h-full w-full rounded-full bg-gray-700 animate-pulse"
             />
-          </motion.div>
-        )}
+          ) : !user?._id ? (
+            <button
+              onClick={() => navigate("/login")}
+              className="h-full w-full flex items-center justify-center"
+            >
+              <IoIosFingerPrint className="h-full w-full cursor-pointer text-gray-400 hover:text-gray-300 transition-all" />
+            </button>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="h-full w-full"
+            >
+              <UserAvatar
+                moreInfo
+                email={user.email}
+                name={user.name}
+                photo={user.photo}
+              />
+            </motion.div>
+          )}
+        </div>
       </nav>
     </aside>
   );

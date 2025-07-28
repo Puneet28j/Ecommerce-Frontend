@@ -1,4 +1,10 @@
-import React, { FormEvent, useState, useCallback, useEffect } from "react";
+import React, {
+  FormEvent,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -31,24 +37,39 @@ import { RootState } from "../redux/store";
 import { productAPI } from "../redux/api/productAPI";
 import { responseToast } from "../utils/features";
 import toast from "react-hot-toast";
+import { Textarea } from "../components/ui/textarea";
 
 // Types
+interface UploadState {
+  status: "idle" | "uploading" | "retrying" | "error";
+  progress: number;
+  error?: string;
+}
+
+interface QueuedFile {
+  file: File;
+  preview: string;
+  uploadState: UploadState;
+  retryCount: number;
+}
+
 interface Product {
   name: string;
   description: string;
   price: number;
   stock: number;
   category: string;
-  photo: File[];
+  photo: QueuedFile[];
   photoPrevs: string[];
+  isOffline: boolean;
 }
 
-interface DragDropZoneProps {
+export interface DragDropZoneProps {
   onFileChange: (files: FileList | null) => void;
   multiple?: boolean;
 }
 
-interface ImagePreviewProps {
+export interface ImagePreviewProps {
   previews: string[];
   onRemove: (index: number) => void;
 }
@@ -58,12 +79,14 @@ interface FormFieldsProps {
   placeholder: string;
   label: string;
   value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   step?: string;
 }
 
 // DragDropZone Component
-const DragDropZone: React.FC<DragDropZoneProps> = ({
+export const DragDropZone: React.FC<DragDropZoneProps> = ({
   onFileChange,
   multiple = true,
 }) => {
@@ -120,7 +143,10 @@ const DragDropZone: React.FC<DragDropZoneProps> = ({
 };
 
 // ImagePreview Component
-const ImagePreview: React.FC<ImagePreviewProps> = ({ previews, onRemove }) => {
+export const ImagePreview: React.FC<ImagePreviewProps> = ({
+  previews,
+  onRemove,
+}) => {
   if (!previews.length) return null;
 
   return (
@@ -151,7 +177,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ previews, onRemove }) => {
 };
 
 // FormFields Component
-const FormFields: React.FC<FormFieldsProps> = ({
+export const FormFields: React.FC<FormFieldsProps> = ({
   type = "text",
   placeholder,
   label,
@@ -160,6 +186,22 @@ const FormFields: React.FC<FormFieldsProps> = ({
   step,
 }) => {
   const isDesktop = useMediaQuery({ query: "(min-width: 1224px)" });
+
+  // Handle textarea separately
+  if (type === "textarea") {
+    return (
+      <div className="grid gap-2">
+        <Label htmlFor={label.toLowerCase()}>{label}</Label>
+        <Textarea
+          value={value}
+          onChange={onChange}
+          id={label.toLowerCase()}
+          placeholder={placeholder}
+          className="min-h-[120px] resize-y text-sm focus:outline-none"
+        />
+      </div>
+    );
+  }
 
   return isDesktop ? (
     <div className="grid gap-2">
@@ -206,7 +248,11 @@ export const NewProduct = () => {
     stock: 0,
     photo: [],
     photoPrevs: [],
+    isOffline: false,
   });
+
+  const formContainerRef = useRef<HTMLFormElement>(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const handleInputChange = (field: keyof Product, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -230,11 +276,21 @@ export const NewProduct = () => {
       );
     }
 
+    const queuedFiles: QueuedFile[] = validFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      uploadState: { status: "idle", progress: 0 },
+      retryCount: 0,
+    }));
+
     setFormData((prev) => ({
       ...prev,
-      photo: [...prev.photo, ...validFiles],
-      photoPrevs: [...prev.photoPrevs, ...validFiles.map(URL.createObjectURL)],
+      photo: [...prev.photo, ...queuedFiles],
+      photoPrevs: [...prev.photoPrevs, ...queuedFiles.map((f) => f.preview)],
     }));
+
+    // Add setTimeout to ensure DOM has updated
+    setTimeout(scrollToBottom, 100);
   }, []);
 
   const removeImage = (index: number) => {
@@ -255,6 +311,11 @@ export const NewProduct = () => {
       return;
     }
 
+    if (isOffline) {
+      toast.error("You are offline. Please check your internet connection.");
+      return;
+    }
+
     const { name, description, price, stock, category, photo } = formData;
     if (
       !name.trim() ||
@@ -270,20 +331,48 @@ export const NewProduct = () => {
 
     setLoading(true);
     const submitData = new FormData();
+
+    // Add basic form fields
     Object.entries(formData).forEach(([key, value]) => {
-      if (key !== "photo" && key !== "photoPrevs") {
+      if (key !== "photo" && key !== "photoPrevs" && key !== "isOffline") {
         submitData.set(key, value.toString());
       }
     });
-    formData.photo.forEach((file) => submitData.append("photo", file));
 
+    // Handle file uploads with retry logic
     try {
+      for (const queuedFile of formData.photo) {
+        const maxRetries = 3;
+        let retryCount = 0;
+        let success = false;
+
+        while (retryCount < maxRetries && !success) {
+          try {
+            submitData.append("photo", queuedFile.file);
+            success = true;
+          } catch (error) {
+            retryCount++;
+            if (retryCount === maxRetries) {
+              throw new Error(
+                `Failed to upload ${queuedFile.file.name} after ${maxRetries} attempts`
+              );
+            }
+            // Wait before retrying
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * retryCount)
+            );
+          }
+        }
+      }
+
       const res = await newProduct({ id: user._id, formData: submitData });
       responseToast(res, navigate, "/admin/products");
       if (res) setOpen(false);
     } catch (error) {
       console.error("Failed to create product:", error);
-      toast.error("An error occurred while creating the product");
+      toast.error(
+        "An error occurred while creating the product. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -299,12 +388,45 @@ export const NewProduct = () => {
         stock: 0,
         photo: [],
         photoPrevs: [],
+        isOffline: false,
       });
     }
   }, [open]);
 
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    if (formContainerRef.current) {
+      formContainerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  }, []);
+
   const renderForm = () => (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={handleSubmit}
+      ref={formContainerRef}
+    >
+      {isOffline && (
+        <div className="bg-destructive/15 text-destructive px-4 py-2 rounded-md mb-4">
+          You are currently offline. Changes will be saved when you're back
+          online.
+        </div>
+      )}
       <div className="space-y-4">
         <FormFields
           label="Title"
@@ -323,6 +445,7 @@ export const NewProduct = () => {
           step="0.01"
         />
         <FormFields
+          type="textarea"
           label="Description"
           placeholder="Enter product description..."
           value={formData.description}

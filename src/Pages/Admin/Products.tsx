@@ -84,7 +84,7 @@ const Products = () => {
                             {product.name}
                           </div>
                           <div className="font-extralight sm:font-normal text-sm text-muted-foreground inline">
-                            cricket
+                            {product.category}
                           </div>
                         </div>
                       </TableCell>

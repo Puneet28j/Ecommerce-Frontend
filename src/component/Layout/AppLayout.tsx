@@ -4,6 +4,7 @@ import Header from "./Header";
 import { User } from "../../types/types";
 import BottomNavbar from "./BottomNavbar";
 import { Suspense } from "react";
+import { OfflineWarning } from "@/components/ui/offline-warning";
 
 interface PropsType {
   user: User | null;
@@ -25,6 +26,7 @@ export const AppLayout = ({ user, loading }: PropsType) => {
       <div className="block sm:hidden">
         <BottomNavbar />
       </div>
+      <OfflineWarning />
     </div>
   );
 };

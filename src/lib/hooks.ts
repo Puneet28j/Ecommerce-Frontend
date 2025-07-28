@@ -131,9 +131,6 @@ export const useThumbnailScroll = (activeThumb: number) => {
   return { thumbnailsContainerRef };
 };
 
-// hooks/useInfiniteScroll.ts
-// src/hooks/useOrders.ts
-
 export const useOrderPagination = (
   queryResult: any,
   // page: number,

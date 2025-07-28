@@ -25,6 +25,22 @@ export const productAPI = createApi({
       query: () => "latest",
       providesTags: ["Product"],
     }),
+    featured: builder.query<AllProductsResponse, string>({
+      query: () => "featured",
+      providesTags: ["Product"],
+    }),
+    bestSelling: builder.query<AllProductsResponse, string>({
+      query: () => "bestselling",
+      providesTags: ["Product"],
+    }),
+    budget: builder.query<AllProductsResponse, string>({
+      query: () => "budget",
+      providesTags: ["Product"],
+    }),
+    // latestProducts: builder.query<AllProductsResponse, string>({
+    //   query: () => "latest",
+    //   providesTags: ["Product"],
+    // }),
     allProducts: builder.query<AllProductsResponse, string>({
       query: (id) => `admin-products?id=${id}`,
       providesTags: ["Product"],
@@ -35,8 +51,9 @@ export const productAPI = createApi({
     }),
     searchProducts: builder.query<SearchProductsResponse, SearchProductsQuery>({
       query: ({ price, search, sort, category, page }) => {
-        let base = `all?search=${search}&page=${page}`;
+        let base = `all?page=${page}`;
 
+        if (search) base += `&search=${search}`;
         if (price) base += `&price=${price}`;
         if (sort) base += `&sort=${sort}`;
         if (category) base += `&category=${category}`;

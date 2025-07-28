@@ -2,115 +2,153 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { debounce } from "lodash";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { GoHomeFill, GoHome } from "react-icons/go";
-import { MdOutlineSpaceDashboard, MdSpaceDashboard } from "react-icons/md";
-import { FaCircleUser, FaRegCircleUser } from "react-icons/fa6";
-import { RiShoppingBag4Fill, RiShoppingBag4Line } from "react-icons/ri";
-import { IoGift, IoGiftOutline } from "react-icons/io5";
 import NavItem from "./NavItem";
+import {
+  HomeIcon,
+  SearchIcon,
+  ShoppingBagIcon,
+  PackageOpenIcon,
+  LayoutDashboardIcon,
+  PackageIcon,
+  ShoppingCartIcon,
+  UsersIcon,
+  BarChart3Icon,
+  TagsIcon,
+} from "lucide-react";
 
 export interface NavItemConfig {
   to: string;
   iconActive: JSX.Element;
   iconInactive: JSX.Element;
   showBadge?: boolean;
+  adminOnly?: boolean;
 }
 
-const navConfig: NavItemConfig[] = [
+const NAV_ITEMS: NavItemConfig[] = [
   {
     to: "/",
-    iconActive: <GoHomeFill className="size-7" />,
-    iconInactive: <GoHome className="size-7" />,
+    iconActive: <HomeIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <HomeIcon strokeWidth={1.5} className="w-7 h-7" />,
   },
   {
-    to: "/admin/analytics",
-    iconActive: <MdSpaceDashboard className="size-7" />,
-    iconInactive: <MdOutlineSpaceDashboard className="size-7" />,
-  },
-  {
-    to: "/admin/dashboard",
-    iconActive: <MdSpaceDashboard className="size-7" />,
-    iconInactive: <MdOutlineSpaceDashboard className="size-7" />,
-  },
-  {
-    to: "/admin/orders",
-    iconActive: <FaCircleUser className="size-7" />,
-    iconInactive: <FaRegCircleUser className="size-7" />,
+    to: "/search",
+    iconActive: <SearchIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <SearchIcon strokeWidth={1.5} className="w-7 h-7" />,
   },
   {
     to: "/cart",
-    iconActive: <RiShoppingBag4Fill className="size-7" />,
-    iconInactive: <RiShoppingBag4Line className="size-7" />,
+    iconActive: <ShoppingBagIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <ShoppingBagIcon strokeWidth={1.5} className="w-7 h-7" />,
     showBadge: true,
   },
   {
     to: "/orders",
-    iconActive: <IoGift className="size-7" />,
-    iconInactive: <IoGiftOutline className="size-7" />,
+    iconActive: <PackageOpenIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <PackageOpenIcon strokeWidth={1.5} className="w-7 h-7" />,
+  },
+  {
+    to: "/admin/dashboard",
+    iconActive: <LayoutDashboardIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <LayoutDashboardIcon strokeWidth={1.5} className="w-7 h-7" />,
+    adminOnly: true,
+  },
+  {
+    to: "/admin/orders",
+    iconActive: <PackageIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <PackageIcon strokeWidth={1.5} className="w-7 h-7" />,
+    adminOnly: true,
+  },
+  {
+    to: "/admin/products",
+    iconActive: <ShoppingCartIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <ShoppingCartIcon strokeWidth={1.5} className="w-7 h-7" />,
+    adminOnly: true,
+  },
+  {
+    to: "/admin/customers",
+    iconActive: <UsersIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <UsersIcon strokeWidth={1.5} className="w-7 h-7" />,
+    adminOnly: true,
+  },
+  {
+    to: "/admin/analytics",
+    iconActive: <BarChart3Icon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <BarChart3Icon strokeWidth={1.5} className="w-7 h-7" />,
+    adminOnly: true,
+  },
+  {
+    to: "/admin/coupon",
+    iconActive: <TagsIcon strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <TagsIcon strokeWidth={1.5} className="w-7 h-7" />,
+    adminOnly: true,
   },
 ];
 
 const BottomNavbar: React.FC = () => {
-  const [show, setShow] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [lastTouchY, setLastTouchY] = useState(0);
-
-  // Get cart items from Redux
-  const cartItems = useSelector(
-    (state: RootState) => state.cartReducer.cartItems
+  const [visible, setVisible] = useState(true);
+  const [lastY, setLastY] = useState(0);
+  const [lastTouch, setLastTouch] = useState(0);
+  const cartCount = useSelector(
+    (state: RootState) => state.cartReducer.cartItems.length
+  );
+  const userRole = useSelector(
+    (state: RootState) => state.userReducer.user?.role
   );
 
-  // Memoize cart length to avoid unnecessary re-renders
-  const cartItemCount = useMemo(() => cartItems.length, [cartItems]);
+  // Filter and memoize nav items
+  const navItems = useMemo(
+    () => NAV_ITEMS.filter((item) => !item.adminOnly || userRole === "admin"),
+    [userRole]
+  );
 
-  // Memoized scroll handler using debounce
-  const controlNavbar = useCallback(
+  // Scroll and touch handlers
+  const onScroll = useCallback(
     debounce(() => {
-      setShow(window.scrollY < lastScrollY);
-      setLastScrollY(window.scrollY);
+      const y = window.scrollY;
+      setVisible(y < lastY);
+      setLastY(y);
     }, 100),
-    [lastScrollY]
+    [lastY]
   );
 
-  // Memoized touch event handlers
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    setLastTouchY(e.touches[0].clientY);
-  }, []);
-
-  const handleTouchMove = useCallback(
+  const onTouchStart = useCallback(
+    (e: TouchEvent) => setLastTouch(e.touches[0].clientY),
+    []
+  );
+  const onTouchMove = useCallback(
     (e: TouchEvent) => {
-      setShow(e.touches[0].clientY > lastTouchY);
-      setLastTouchY(e.touches[0].clientY);
+      const y = e.touches[0].clientY;
+      setVisible(y > lastTouch);
+      setLastTouch(y);
     },
-    [lastTouchY]
+    [lastTouch]
   );
 
   useEffect(() => {
-    window.addEventListener("scroll", controlNavbar);
-    document.body.addEventListener("touchstart", handleTouchStart);
-    document.body.addEventListener("touchmove", handleTouchMove);
-
+    window.addEventListener("scroll", onScroll);
+    document.body.addEventListener("touchstart", onTouchStart);
+    document.body.addEventListener("touchmove", onTouchMove);
     return () => {
-      window.removeEventListener("scroll", controlNavbar);
-      document.body.removeEventListener("touchstart", handleTouchStart);
-      document.body.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("scroll", onScroll);
+      document.body.removeEventListener("touchstart", onTouchStart);
+      document.body.removeEventListener("touchmove", onTouchMove);
     };
-  }, [controlNavbar, handleTouchStart, handleTouchMove]);
+  }, [onScroll, onTouchStart, onTouchMove]);
 
   return (
     <div
-      className={`fixed z-50 bottom-0 w-full dark:bg-black bg-white dark:text-white text-black transition-transform duration-300 ${
-        show ? "translate-y-0" : "translate-y-full"
+      className={`fixed bottom-0 w-full transition-transform duration-300 sm:hidden bg-white dark:bg-black ${
+        visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
       <nav className="flex justify-around py-3">
-        {navConfig.map(({ to, iconActive, iconInactive, showBadge }, index) => (
+        {navItems.map(({ to, iconActive, iconInactive, showBadge }, i) => (
           <NavItem
-            key={index}
+            key={to}
             to={to}
             iconActive={iconActive}
             iconInactive={iconInactive}
-            badgeCount={showBadge ? cartItemCount : undefined}
+            badgeCount={showBadge ? cartCount : undefined}
           />
         ))}
       </nav>
@@ -118,4 +156,4 @@ const BottomNavbar: React.FC = () => {
   );
 };
 
-export default BottomNavbar;
+export default React.memo(BottomNavbar);

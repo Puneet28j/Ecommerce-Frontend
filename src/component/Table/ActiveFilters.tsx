@@ -1,3 +1,4 @@
+// components/filters/active-filters.tsx
 import { FilterChip } from "./FilterChip";
 
 interface ActiveFiltersProps {
@@ -13,26 +14,27 @@ interface ActiveFiltersProps {
   };
 }
 
-export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
+export const ActiveFilters = ({
   searchQuery,
   statusFilter,
   dateRange,
   totalRange,
   resetHandlers,
-}) => {
-  const hasFilters =
-    searchQuery !== "" ||
-    statusFilter !== "all" ||
-    dateRange.from !== "" ||
-    dateRange.to !== "" ||
-    totalRange.min !== "" ||
-    totalRange.max !== "";
+}: ActiveFiltersProps) => {
+  const hasFilters = [
+    searchQuery,
+    statusFilter !== "all",
+    dateRange.from,
+    dateRange.to,
+    totalRange.min,
+    totalRange.max,
+  ].some(Boolean);
 
   if (!hasFilters) return null;
 
   return (
-    <div className="mt-3 text-sm text-muted-foreground hidden sm:flex flex-wrap gap-1.5 items-center">
-      <span>Active filters:</span>
+    <div className="mt-3 text-sm text-muted-foreground flex flex-wrap gap-2 items-center">
+      <span className="sr-only">Active filters:</span>
 
       {searchQuery && (
         <FilterChip
@@ -53,7 +55,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       {(dateRange.from || dateRange.to) && (
         <FilterChip
           label="Date"
-          value={`${dateRange.from || "Any"} to ${dateRange.to || "Any"}`}
+          value={`${dateRange.from || "Any"} - ${dateRange.to || "Any"}`}
           onReset={resetHandlers.date}
         />
       )}
@@ -61,7 +63,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       {(totalRange.min || totalRange.max) && (
         <FilterChip
           label="Price"
-          value={`${totalRange.min || "0"} - ${totalRange.max || "10000"}`}
+          value={`${totalRange.min || "Min"} - ${totalRange.max || "Max"}`}
           onReset={resetHandlers.total}
         />
       )}

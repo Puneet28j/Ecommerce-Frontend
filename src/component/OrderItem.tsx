@@ -37,7 +37,7 @@ export const OrderItem = memo(
 
     const visibleItems = order.orderItems.slice(0, 3);
     const remaining = Math.max(order.orderItems.length - 3, 0);
-
+    console.log(order.orderItems.map((item) => item.productId));
     return (
       <Card className="border-none">
         <AccordionItem

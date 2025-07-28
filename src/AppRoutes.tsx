@@ -9,11 +9,12 @@ import Search from "./component/Search";
 
 import Shipping from "./Pages/Shipping";
 import Analytics from "./Pages/Admin/Analytics";
+import ManageProduct from "./Pages/Admin/ManageProduct";
 
 // Lazy load components
 const Login = lazy(() => import("./Pages/Login"));
 const NotFound = lazy(() => import("./Pages/NotFound"));
-const MyOrder = lazy(() => import("./Pages/UserOrders"));
+const UserOrders = lazy(() => import("./Pages/UserOrders"));
 const Checkout = lazy(() => import("./Pages/Admin/Checkout"));
 const Home = lazy(() => import("./Pages/Home"));
 const ProductDetails = lazy(() => import("./Pages/ProductDetails"));
@@ -21,6 +22,7 @@ const Cart = lazy(() => import("./Pages/Cart"));
 const AdminDashboard = lazy(() => import("./Pages/Admin/Dashboard"));
 const AdminProducts = lazy(() => import("./Pages/Admin/Products"));
 const OrdersTable = lazy(() => import("./component/Table/OrdersTable"));
+const Coupon = lazy(() => import("./Pages/Admin/Coupon"));
 
 const AppRoutes = () => {
   const { user, loading } = useSelector(
@@ -40,7 +42,7 @@ const AppRoutes = () => {
           <Route path={ROUTES.SEARCH} element={<Search />} />
           <Route element={<ProtectedRoute isAuthenticated={!!user} />}>
             <Route path={ROUTES.CART} element={<Cart />} />
-            <Route path={ROUTES.ORDERS} element={<MyOrder />} />
+            <Route path={ROUTES.ORDERS} element={<UserOrders />} />
             <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
             <Route path={ROUTES.SHIPPING} element={<Shipping />} />
           </Route>
@@ -55,8 +57,13 @@ const AppRoutes = () => {
           >
             <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
             <Route path={ROUTES.ADMIN_PRODUCTS} element={<AdminProducts />} />
+            <Route
+              path={ROUTES.ADMIN_PRODUCT_DETAILS}
+              element={<ManageProduct />}
+            />
             <Route path={ROUTES.ADMIN_ORDERS} element={<OrdersTable />} />
             <Route path={ROUTES.ADMIN_ANALYTICS} element={<Analytics />} />
+            <Route path={ROUTES.COUPON} element={<Coupon />} />
           </Route>
         </Route>
         {/* Login route */}

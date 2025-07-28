@@ -20,6 +20,7 @@ export type CustomError = {
 export type MessageResponse = {
   message: string;
   success: boolean;
+  user: User;
 };
 export type AllUsersResponse = {
   users: User[];
@@ -40,7 +41,12 @@ export type CategoriesResponse = {
   categories: string[];
 };
 export type SearchProductsResponse = AllProductsResponse & {
-  totalPage: number;
+  pagination: {
+    totalOrders: number;
+    currentPage: number;
+    totalPages: number;
+    limit: number;
+  };
 };
 
 export type ProductDetailsResponse = {
@@ -83,7 +89,7 @@ export type LineResponse = {
   charts: Line;
 };
 export type SearchProductsQuery = {
-  price: number;
+  price: string;
   page: number;
   category: string;
   search: string;
@@ -93,11 +99,11 @@ export type NewProductRequest = {
   id: string;
   formData: FormData;
 };
-export type UpdateProductRequest = {
+export interface UpdateProductRequest {
+  formData: FormData;
   userId: string;
   productId: string;
-  formData: FormData;
-};
+}
 export type DeleteUserRequest = {
   userId: string;
   adminUserId: string;
@@ -138,3 +144,8 @@ export type UpdateOrderRequest = {
   userId: string;
   orderId: string;
 };
+
+export interface ExistingPhoto {
+  url: string;
+  public_id: string;
+}

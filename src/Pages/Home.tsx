@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import ProductCard from "../component/ProductCard";
-import { CardFooter, CardTitle } from "../components/ui/card";
+import { CardTitle } from "../components/ui/card";
 import { ScrollArea, ScrollBar } from "../components/ui/scroll-area";
 import { productAPI } from "../redux/api/productAPI";
 import { addToCart } from "../redux/reducer/cartReducer";
@@ -11,12 +11,21 @@ import { Skeleton } from "../components/ui/skeleton";
 const Home = () => {
   const dispatch = useDispatch();
   const { data, isError, isLoading } = productAPI.useLatestProductsQuery("");
-
+  const { data: FeaturedProducts, isLoading: FeaturedIsLoading } =
+    productAPI.useFeaturedQuery("");
+  const { data: BestSellingProducts, isLoading: BestSellingIsLoading } =
+    productAPI.useBestSellingQuery("");
+  const { data: BudgetProducts, isLoading: BudgetIsLoading } =
+    productAPI.useBudgetQuery("");
   const addToCartHandler = (cartItem: CartItem) => {
     if (cartItem.stock < 1) return toast.error("Out of stock");
     dispatch(addToCart(cartItem));
     toast.success("Added to cart");
   };
+  console.log("BestSellingProducts", BestSellingProducts);
+  console.log("FeaturedProducts", FeaturedProducts);
+  console.log("BudgetProducts", BudgetProducts);
+  console.log("data", data);
 
   if (isError) {
     toast.error("Failed to load products");
@@ -24,51 +33,189 @@ const Home = () => {
   }
 
   return (
-    <div className="container px-0 mt-10 font-primary">
-      <CardTitle className="hidden sm:block font-extrabold text-6xl md:text-5xl tracking-wide text-center mb-8">
-        Ecommerce
-      </CardTitle>
-
-      <CardFooter className="px-4 sm:px-6">
-        <CardTitle className="font-extrabold text-2xl lg:text-3xl">
-          Latest Products
+    <div className="container max-w-7xl mx-auto px-4 py-8 space-y-12">
+      <header className="text-center space-y-4">
+        <CardTitle className="hidden sm:block font-extrabold text-5xl md:text-6xl tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          Ecommerce
         </CardTitle>
-      </CardFooter>
+        <p className="text-muted-foreground text-lg">
+          Discover amazing products at great prices
+        </p>
+      </header>
 
-      <ScrollArea className="w-full rounded-md shadow-sm">
-        <div className="py-4">
-          {isLoading ? (
-            <LoadingProductsSection />
-          ) : (
-            <div className="flex space-x-4 px-4 pb-4">
-              {data?.products?.map((i) => (
-                <ProductCard
-                  key={i._id}
-                  productId={i._id}
-                  name={i.name}
-                  price={i.price}
-                  stock={i.stock}
-                  handler={addToCartHandler}
-                  photo={i.photo}
-                  reviewCount={i.reviewCount}
-                  fullStars={Math.floor(i.averageRating)}
-                  hasHalfStar={
-                    i.averageRating - Math.floor(i.averageRating) >= 0.5
-                  }
-                  emptyStars={
-                    5 -
-                    Math.floor(i.averageRating) -
-                    (i.averageRating - Math.floor(i.averageRating) >= 0.5
-                      ? 1
-                      : 0)
-                  }
-                />
-              ))}
-            </div>
-          )}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between px-2">
+          <CardTitle className="font-bold text-2xl lg:text-3xl">
+            Latest Products
+          </CardTitle>
+          <button className="text-primary hover:underline">View All →</button>
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+
+        <ScrollArea className="w-full">
+          <div className="py-4">
+            {isLoading ? (
+              <LoadingProductsSection />
+            ) : (
+              <div className="flex gap-2 px-2 pb-4">
+                {data?.products?.map((i) => (
+                  <ProductCard
+                    key={i._id}
+                    productId={i._id}
+                    name={i.name}
+                    price={i.price}
+                    stock={i.stock}
+                    handler={addToCartHandler}
+                    photo={i.photo}
+                    reviewCount={i.reviewCount}
+                    fullStars={Math.floor(i.averageRating)}
+                    hasHalfStar={
+                      i.averageRating - Math.floor(i.averageRating) >= 0.5
+                    }
+                    emptyStars={
+                      5 -
+                      Math.floor(i.averageRating) -
+                      (i.averageRating - Math.floor(i.averageRating) >= 0.5
+                        ? 1
+                        : 0)
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" className="bg-secondary/20" />
+        </ScrollArea>
+      </section>
+
+      <section className="space-y-6">
+        <div className="flex items-center justify-between px-2">
+          <CardTitle className="font-bold text-2xl lg:text-3xl">
+            Bestselling Products
+          </CardTitle>
+          <button className="text-primary hover:underline">View All →</button>
+        </div>
+
+        <ScrollArea className="w-full">
+          <div className="py-4">
+            {BestSellingIsLoading ? (
+              <LoadingProductsSection />
+            ) : (
+              <div className="flex gap-6 px-2 pb-4">
+                {BestSellingProducts?.products?.map((i) => (
+                  <ProductCard
+                    key={i._id}
+                    productId={i._id}
+                    name={i.name}
+                    price={i.price}
+                    stock={i.stock}
+                    handler={addToCartHandler}
+                    photo={i.photo}
+                    reviewCount={i.reviewCount}
+                    fullStars={Math.floor(i.averageRating)}
+                    hasHalfStar={
+                      i.averageRating - Math.floor(i.averageRating) >= 0.5
+                    }
+                    emptyStars={
+                      5 -
+                      Math.floor(i.averageRating) -
+                      (i.averageRating - Math.floor(i.averageRating) >= 0.5
+                        ? 1
+                        : 0)
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" className="bg-secondary/20" />
+        </ScrollArea>
+      </section>
+      <section className="space-y-6">
+        <div className="flex items-center justify-between px-2">
+          <CardTitle className="font-bold text-2xl lg:text-3xl">
+            Featured Products
+          </CardTitle>
+          <button className="text-primary hover:underline">View All →</button>
+        </div>
+
+        <ScrollArea className="w-full">
+          <div className="py-4">
+            {FeaturedIsLoading ? (
+              <LoadingProductsSection />
+            ) : (
+              <div className="flex gap-6 px-2 pb-4">
+                {FeaturedProducts?.products?.map((i) => (
+                  <ProductCard
+                    key={i._id}
+                    productId={i._id}
+                    name={i.name}
+                    price={i.price}
+                    stock={i.stock}
+                    handler={addToCartHandler}
+                    photo={i.photo}
+                    reviewCount={i.reviewCount}
+                    fullStars={Math.floor(i.averageRating)}
+                    hasHalfStar={
+                      i.averageRating - Math.floor(i.averageRating) >= 0.5
+                    }
+                    emptyStars={
+                      5 -
+                      Math.floor(i.averageRating) -
+                      (i.averageRating - Math.floor(i.averageRating) >= 0.5
+                        ? 1
+                        : 0)
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" className="bg-secondary/20" />
+        </ScrollArea>
+      </section>
+      <section className="space-y-6">
+        <div className="flex items-center justify-between px-2">
+          <CardTitle className="font-bold text-2xl lg:text-3xl">
+            Budget Products
+          </CardTitle>
+          <button className="text-primary hover:underline">View All →</button>
+        </div>
+
+        <ScrollArea className="w-full">
+          <div className="py-4">
+            {BudgetIsLoading ? (
+              <LoadingProductsSection />
+            ) : (
+              <div className="flex gap-6 px-2 pb-4">
+                {BudgetProducts?.products?.map((i) => (
+                  <ProductCard
+                    key={i._id}
+                    productId={i._id}
+                    name={i.name}
+                    price={i.price}
+                    stock={i.stock}
+                    handler={addToCartHandler}
+                    photo={i.photo}
+                    reviewCount={i.reviewCount}
+                    fullStars={Math.floor(i.averageRating)}
+                    hasHalfStar={
+                      i.averageRating - Math.floor(i.averageRating) >= 0.5
+                    }
+                    emptyStars={
+                      5 -
+                      Math.floor(i.averageRating) -
+                      (i.averageRating - Math.floor(i.averageRating) >= 0.5
+                        ? 1
+                        : 0)
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" className="bg-secondary/20" />
+        </ScrollArea>
+      </section>
     </div>
   );
 };
@@ -76,18 +223,20 @@ const Home = () => {
 export default Home;
 
 const LoadingSkeletonProductCard = () => (
-  <div className="w-64 space-y-4 rounded-lg bg-background p-4 shadow-sm">
-    <Skeleton className="h-48 w-full rounded-lg" />
-    <Skeleton className="h-4 w-3/4 rounded-full" />
+  <div className="w-72 space-y-4 rounded-xl bg-card p-4 shadow-md">
+    <Skeleton className="h-52 w-full rounded-lg" />
+    <Skeleton className="h-5 w-3/4 rounded-full" />
     <Skeleton className="h-4 w-1/2 rounded-full" />
     <Skeleton className="h-10 w-full rounded-lg" />
   </div>
 );
 
 export const LoadingProductsSection = () => (
-  <div className="flex space-x-4 px-4 pb-4">
+  <div className="flex gap-4 px-2 pb-4">
     {[1, 2, 3, 4].map((index) => (
-      <LoadingSkeletonProductCard key={index} />
+      <div className="flex-none" key={index}>
+        <LoadingSkeletonProductCard />
+      </div>
     ))}
   </div>
 );
