@@ -1,14 +1,16 @@
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../component/ProductCard";
 import { CardTitle } from "../components/ui/card";
 import { ScrollArea, ScrollBar } from "../components/ui/scroll-area";
+import { Skeleton } from "../components/ui/skeleton";
 import { productAPI } from "../redux/api/productAPI";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
-import { Skeleton } from "../components/ui/skeleton";
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, isError, isLoading } = productAPI.useLatestProductsQuery("");
   const { data: FeaturedProducts, isLoading: FeaturedIsLoading } =
@@ -48,7 +50,12 @@ const Home = () => {
           <CardTitle className="font-bold text-2xl lg:text-3xl">
             Latest Products
           </CardTitle>
-          <button className="text-primary hover:underline">View All →</button>
+          <button
+            onClick={() => navigate("/search")}
+            className="text-primary hover:underline"
+          >
+            View All →
+          </button>
         </div>
 
         <ScrollArea className="w-full">
@@ -92,7 +99,12 @@ const Home = () => {
           <CardTitle className="font-bold text-2xl lg:text-3xl">
             Bestselling Products
           </CardTitle>
-          <button className="text-primary hover:underline">View All →</button>
+          <button
+            onClick={() => navigate("/search")}
+            className="text-primary hover:underline"
+          >
+            View All →
+          </button>
         </div>
 
         <ScrollArea className="w-full">
@@ -135,7 +147,12 @@ const Home = () => {
           <CardTitle className="font-bold text-2xl lg:text-3xl">
             Featured Products
           </CardTitle>
-          <button className="text-primary hover:underline">View All →</button>
+          <button
+            onClick={() => navigate("/search")}
+            className="text-primary hover:underline"
+          >
+            View All →
+          </button>
         </div>
 
         <ScrollArea className="w-full">
@@ -178,7 +195,12 @@ const Home = () => {
           <CardTitle className="font-bold text-2xl lg:text-3xl">
             Budget Products
           </CardTitle>
-          <button className="text-primary hover:underline">View All →</button>
+          <button
+            onClick={() => navigate("/search")}
+            className="text-primary hover:underline"
+          >
+            View All →
+          </button>
         </div>
 
         <ScrollArea className="w-full">

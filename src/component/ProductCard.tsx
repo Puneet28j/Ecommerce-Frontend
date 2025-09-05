@@ -43,7 +43,7 @@ const ProductCard = ({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const LOW_STOCK_LIMIT = 5;
 
-  const handleViewProduct = () => navigate(`product/${productId}`);
+  const handleViewProduct = () => navigate(`/product/${productId}`);
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

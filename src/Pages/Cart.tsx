@@ -203,7 +203,7 @@ const CouponInput = ({
     <input
       type="text"
       placeholder="Enter Coupon Code"
-      value={couponCode}
+      value={couponCode.toLocaleUpperCase()}
       onChange={(e) => handleCouponChange(e.target.value)}
       className="w-full p-2 border rounded-md dark:bg-slate-900 text-black dark:text-gray-200"
     />

@@ -12,8 +12,7 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { orderApi } from "../../redux/api/orderAPI";
 import { NewOrderRequest } from "../../types/api-types";
 import { RootState } from "../../redux/store";
-import { resetCart } from "../../redux/reducer/cartReducer";
-import { clearCart } from "../../redux/reducer/cartReducer";
+import { resetCart, clearCart } from "../../redux/reducer/cartReducer";
 import { responseToast } from "../../utils/features";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY);
@@ -25,7 +24,6 @@ const CheckoutForm = () => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state: RootState) => state.userReducer);
-
   const {
     shippingInfo,
     cartItems,
@@ -36,8 +34,7 @@ const CheckoutForm = () => {
     total,
   } = useSelector((state: RootState) => state.cartReducer);
 
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   const [newOrder] = orderApi.useNewOrderMutation();
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
@@ -65,7 +62,7 @@ const CheckoutForm = () => {
 
     if (error) {
       setIsProcessing(false);
-      return toast.error(error.message || "Something Went Wrong");
+      return toast.error(error.message || "Something went wrong. Try again.");
     }
 
     if (paymentIntent.status === "succeeded") {
@@ -74,15 +71,56 @@ const CheckoutForm = () => {
       dispatch(clearCart());
       responseToast(res, navigate, "/orders");
     }
+
     setIsProcessing(false);
   };
 
   return (
-    <div className="checkout-container">
-      <form onSubmit={submitHandler}>
+    <div className="max-w-lg mx-auto bg-white dark:bg-gray-900 shadow-md rounded-xl p-6">
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+        Complete Your Payment
+      </h2>
+
+      {/* Order Summary */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">
+        <h3 className="text-md font-medium text-gray-700 dark:text-gray-200 mb-2">
+          Order Summary
+        </h3>
+        <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+          <span>Subtotal</span>
+          <span>₹{subTotal.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+          <span>Tax</span>
+          <span>₹{tax.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+          <span>Shipping</span>
+          <span>₹{shippingCharges.toFixed(2)}</span>
+        </div>
+        {discount > 0 && (
+          <div className="flex justify-between text-sm text-red-500 font-medium">
+            <span>Discount</span>
+            <span>-₹{discount.toFixed(2)}</span>
+          </div>
+        )}
+        <hr className="my-2 border-gray-300 dark:border-gray-700" />
+        <div className="flex justify-between font-semibold text-gray-800 dark:text-gray-100">
+          <span>Total</span>
+          <span>₹{total.toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* Stripe Payment Element */}
+      <form onSubmit={submitHandler} className="space-y-4">
         <PaymentElement />
-        <button type="submit" disabled={isProcessing}>
-          {isProcessing ? "Processing..." : "Pay"}
+
+        <button
+          type="submit"
+          disabled={isProcessing || !stripe || !elements}
+          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all"
+        >
+          {isProcessing ? "Processing..." : `Pay ₹${total.toFixed(2)}`}
         </button>
       </form>
     </div>
@@ -91,18 +129,12 @@ const CheckoutForm = () => {
 
 const Checkout = () => {
   const location = useLocation();
-
   const clientSecret: string | undefined = location.state;
 
-  if (!clientSecret) return <Navigate to={"/shipping"} />;
+  if (!clientSecret) return <Navigate to={"/cart"} />;
 
   return (
-    <Elements
-      options={{
-        clientSecret,
-      }}
-      stripe={stripePromise}
-    >
+    <Elements options={{ clientSecret }} stripe={stripePromise}>
       <CheckoutForm />
     </Elements>
   );
