@@ -294,29 +294,34 @@ export default function SearchPage() {
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        {/* Left: Title + Subtitle */}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Product Search</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Product Search
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Discover products that match your needs
           </p>
         </div>
 
+        {/* Right: Pagination Info */}
         {pagination && (
-          <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 px-3 py-1.5 rounded-lg border">
             <span>
-              Page {pagination.currentPage} of {pagination.totalPages}
+              Page <span className="font-medium">{pagination.currentPage}</span>{" "}
+              of <span className="font-medium">{pagination.totalPages}</span>
             </span>
             <Separator orientation="vertical" className="h-4" />
-            <span>{pagination.totalOrders} total products</span>
+            <span>{pagination.totalOrders} products</span>
           </div>
         )}
       </div>
 
       {/* Filter Section */}
-      <Card className="border shadow-sm mb-6">
-        <CardContent className="p-6">
-          {/* Primary Filters Grid */}
+      <Card className="border shadow-sm rounded-2xl mb-6">
+        <CardContent className="p-4 sm:p-6">
+          {/* Filters Grid */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 mb-4">
             {/* Search Input */}
             <div className="sm:col-span-2 lg:col-span-2 xl:col-span-2">
@@ -371,7 +376,7 @@ export default function SearchPage() {
               </SelectContent>
             </Select>
 
-            {/* Price Range Filter */}
+            {/* Price Range */}
             <div className="w-full">
               <TotalRangeFilter
                 value={{ min: filters.minPrice, max: filters.maxPrice }}
@@ -390,7 +395,7 @@ export default function SearchPage() {
 
           {/* Active Filters */}
           {hasActiveFilters && (
-            <div className="border-t pt-4">
+            <div className="border-t pt-4 mt-4">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="text-sm font-medium text-muted-foreground">
                   Active filters:
@@ -446,11 +451,11 @@ export default function SearchPage() {
       </Card>
 
       {/* Results Section */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Loading State */}
         {productsLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {Array.from({ length: 10 }).map((_, i) => (
               <ProductSkeleton key={i} />
             ))}
           </div>
@@ -467,43 +472,42 @@ export default function SearchPage() {
         {/* Products Grid */}
         {!productsLoading && !productsError && products.length > 0 && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Products Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
               {products.map((product) => (
-                <div key={product._id} className="w-full max-w-[280px] mx-auto">
-                  <ProductCard
-                    productId={product._id}
-                    {...product}
-                    handler={addToCartHandler}
-                    photo={[
-                      {
-                        url: product.photo[0]?.url || "",
-                        public_id: "dummy_public_id",
-                      },
-                    ]}
-                    reviewCount={product.reviewCount}
-                    fullStars={Math.floor(product.averageRating)}
-                    hasHalfStar={
-                      product.averageRating -
-                        Math.floor(product.averageRating) >=
-                      0.5
-                    }
-                    emptyStars={
-                      5 -
-                      Math.floor(product.averageRating) -
-                      (product.averageRating -
-                        Math.floor(product.averageRating) >=
-                      0.5
-                        ? 1
-                        : 0)
-                    }
-                  />
-                </div>
+                <ProductCard
+                  key={product._id}
+                  productId={product._id}
+                  {...product}
+                  handler={addToCartHandler}
+                  photo={[
+                    {
+                      url: product.photo[0]?.url || "",
+                      public_id: "dummy_public_id",
+                    },
+                  ]}
+                  reviewCount={product.reviewCount}
+                  fullStars={Math.floor(product.averageRating)}
+                  hasHalfStar={
+                    product.averageRating - Math.floor(product.averageRating) >=
+                    0.5
+                  }
+                  emptyStars={
+                    5 -
+                    Math.floor(product.averageRating) -
+                    (product.averageRating -
+                      Math.floor(product.averageRating) >=
+                    0.5
+                      ? 1
+                      : 0)
+                  }
+                />
               ))}
             </div>
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t">
                 {/* Pagination Info */}
                 <div className="text-sm text-muted-foreground order-2 sm:order-1">
                   Showing {displayRange.start}-{displayRange.end} of{" "}
@@ -512,7 +516,7 @@ export default function SearchPage() {
 
                 {/* Pagination Controls */}
                 <Pagination className="order-1 sm:order-2">
-                  <PaginationContent>
+                  <PaginationContent className="flex gap-2">
                     <PaginationItem>
                       <PaginationPrevious
                         onClick={goToPreviousPage}
@@ -532,7 +536,7 @@ export default function SearchPage() {
                           }
                           size="icon"
                           onClick={() => goToPage(pageNum)}
-                          className="w-10 h-10"
+                          className="w-10 h-10 rounded-full"
                         >
                           {pageNum}
                         </Button>

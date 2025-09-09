@@ -39,3 +39,18 @@ export const filterParams = (filters: ColumnFiltersState) => {
 
   return params;
 };
+
+// Convert an existing Cloudinary upload URL into a transformed URL
+// This is a small helper that inserts transformations after /upload/
+export const cloudinaryTransform = (
+  url: string,
+  opts: { w?: number; q?: string } = {}
+) => {
+  try {
+    const { w } = opts;
+    const insert = `c_limit${w ? `,w_${w}` : ""},f_auto,q_auto/`;
+    return url.replace("/upload/", `/upload/${insert}`);
+  } catch {
+    return url;
+  }
+};

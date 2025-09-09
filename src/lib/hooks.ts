@@ -91,45 +91,39 @@ export const useReviews = (productId: string) => {
   };
 };
 
-export const useThumbnailScroll = (activeThumb: number) => {
+export function useThumbnailScroll(activeIndex: number) {
   const thumbnailsContainerRef = useRef<HTMLDivElement | null>(null);
 
+  // ALWAYS call the hook (useLayoutEffect) unconditionally.
   useLayoutEffect(() => {
-    const container = thumbnailsContainerRef.current;
-    if (!container) return;
+    const el = thumbnailsContainerRef.current;
+    if (!el) return; // check inside effect, not around the hook
 
-    const scrollToThumbnail = () => {
-      const thumbnailsWrapper = container.firstElementChild;
-      if (!thumbnailsWrapper) return;
+    // find child by data attribute (we already added data-thumb-index)
+    const selector = `[data-thumb-index='${activeIndex}']`;
+    const activeEl = el.querySelector<HTMLElement>(selector);
+    if (!activeEl) return;
 
-      const thumbnails = Array.from(
-        thumbnailsWrapper.children
-      ) as HTMLElement[];
-      if (!thumbnails.length) return;
+    const containerRect = el.getBoundingClientRect();
+    const childRect = activeEl.getBoundingClientRect();
 
-      const activeElement = thumbnails[activeThumb];
-      if (!activeElement) return;
+    // center active child vertically inside the container
+    const offset =
+      childRect.top -
+      containerRect.top +
+      el.scrollTop -
+      (containerRect.height - childRect.height) / 2;
 
-      const visibleHeight = container.clientHeight;
-      const thumbHeight = activeElement.offsetHeight;
-      const thumbTop = activeElement.offsetTop;
-
-      const scrollTarget = thumbTop - visibleHeight / 2 + thumbHeight / 2;
-      const maxScroll = container.scrollHeight - visibleHeight;
-      const finalScroll = Math.max(0, Math.min(scrollTarget, maxScroll));
-
-      container.scrollTo({
-        top: finalScroll,
-        behavior: "smooth",
-      });
-    };
-
-    // Use requestAnimationFrame to ensure measurements are up to date
-    requestAnimationFrame(scrollToThumbnail);
-  }, [activeThumb]);
+    // prefer smooth scroll, but fall back if unsupported
+    try {
+      el.scrollTo({ top: offset, behavior: "smooth" });
+    } catch {
+      el.scrollTop = offset;
+    }
+  }, [activeIndex]);
 
   return { thumbnailsContainerRef };
-};
+}
 
 export const useOrderPagination = (
   queryResult: any,

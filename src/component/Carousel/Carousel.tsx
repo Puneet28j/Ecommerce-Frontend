@@ -20,6 +20,8 @@ interface CarouselProps {
   thumbnailPosition?: "left" | "bottom";
 }
 
+const CLOUD_WIDTHS = [480, 1024, 1600];
+
 const Carousel = ({
   images,
   buttonVisibility = false,
@@ -36,9 +38,12 @@ const Carousel = ({
   const touchThreshold = 50;
 
   const { thumbnailsContainerRef } = useThumbnailScroll(activeThumb);
-  const [imageLoaded, setImageLoaded] = useState<boolean[]>(
-    new Array(images?.length).fill(false)
-  );
+
+  // initialize and reset imageLoaded when images change
+  const [imageLoaded, setImageLoaded] = useState<boolean[]>([]);
+  useEffect(() => {
+    setImageLoaded(new Array(images?.length ?? 0).fill(false));
+  }, [images?.length]);
 
   const handleImageLoad = (index: number) => {
     setImageLoaded((prev) => {
@@ -146,16 +151,28 @@ const Carousel = ({
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {images.map((image, index) => (
-          <CarouselImage
-            key={image.public_id}
-            image={image}
-            imageLoaded={imageLoaded}
-            handleImageLoad={handleImageLoad}
-            index={index}
-            resetTimer={resetTimer} // Pass resetTimer to child for image clicks, etc.
-          />
-        ))}
+        {images.map((image, index) => {
+          // determine whether this slide is the active slide or neighbor
+          const isActive = index === currentIndex;
+          const isPrev =
+            index === (currentIndex - 1 + images.length) % images.length;
+          const isNext = index === (currentIndex + 1) % images.length;
+          const isNeighbor = isPrev || isNext;
+
+          return (
+            <CarouselImage
+              key={image.public_id}
+              image={image}
+              imageLoaded={imageLoaded}
+              handleImageLoad={handleImageLoad}
+              index={index}
+              resetTimer={resetTimer}
+              isActive={isActive}
+              isNeighbor={isNeighbor}
+              srcWidths={CLOUD_WIDTHS}
+            />
+          );
+        })}
       </div>
 
       {/* Controls Overlay */}

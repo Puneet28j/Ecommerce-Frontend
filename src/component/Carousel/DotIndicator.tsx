@@ -11,8 +11,7 @@ const DotIndicator = ({
 }: DotIndicatorProps) => {
   return (
     <button
-      key={index}
-      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+      className={`w-2 h-2 rounded-full transition-all duration-200 ${
         index === currentIndex
           ? "bg-gray-700 scale-125"
           : "bg-gray-400 hover:bg-gray-600"

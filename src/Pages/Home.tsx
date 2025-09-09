@@ -63,12 +63,12 @@ const Home = () => {
             {isLoading ? (
               <LoadingProductsSection />
             ) : (
-              <div className="flex gap-2 px-2 pb-4">
+              <div className="flex gap-2  pb-4">
                 {data?.products?.map((i) => (
                   <ProductCard
                     key={i._id}
                     productId={i._id}
-                    name={i.name}
+                    name={"This is the first product card just for testing"}
                     price={i.price}
                     stock={i.stock}
                     handler={addToCartHandler}
@@ -112,7 +112,7 @@ const Home = () => {
             {BestSellingIsLoading ? (
               <LoadingProductsSection />
             ) : (
-              <div className="flex gap-6 px-2 pb-4">
+              <div className="flex gap-2  pb-4">
                 {BestSellingProducts?.products?.map((i) => (
                   <ProductCard
                     key={i._id}
@@ -160,7 +160,7 @@ const Home = () => {
             {FeaturedIsLoading ? (
               <LoadingProductsSection />
             ) : (
-              <div className="flex gap-6 px-2 pb-4">
+              <div className="flex gap-6 pb-4">
                 {FeaturedProducts?.products?.map((i) => (
                   <ProductCard
                     key={i._id}
@@ -208,7 +208,7 @@ const Home = () => {
             {BudgetIsLoading ? (
               <LoadingProductsSection />
             ) : (
-              <div className="flex gap-6 px-2 pb-4">
+              <div className="flex gap-6  pb-4">
                 {BudgetProducts?.products?.map((i) => (
                   <ProductCard
                     key={i._id}
