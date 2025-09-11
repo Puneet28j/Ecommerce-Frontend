@@ -4,6 +4,8 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { type ClassValue, clsx } from "clsx";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -54,3 +56,13 @@ export const cloudinaryTransform = (
     return url;
   }
 };
+
+export default function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
