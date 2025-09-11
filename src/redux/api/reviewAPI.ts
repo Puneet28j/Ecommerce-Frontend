@@ -20,7 +20,6 @@ export interface Review {
 export interface ReviewRequest {
   _id?: string;
   productId?: string;
-  userId?: string;
   rating?: number;
   comment?: string;
   page?: number;
@@ -53,17 +52,22 @@ export const reviewAPI = createApi({
   reducerPath: "reviewApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/review/`,
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("token");
+      if (token) headers.set("authorization", `Bearer ${token}`);
+      return headers;
+    },
   }),
   tagTypes: ["Reviews", "Product"],
   endpoints: (builder) => ({
     updateReview: builder.mutation<
       UpdateReviewResponse,
-      { productId: string; rating: number; comment?: string; userId: string }
+      { productId: string; rating: number; comment?: string; userId?: string }
     >({
-      query: ({ productId, rating, comment, userId }) => ({
+      query: ({ productId, rating, comment }) => ({
         url: "update",
         method: "PUT",
-        body: { productId, rating, comment, userId },
+        body: { productId, rating, comment },
       }),
       invalidatesTags: (_result, _error, { productId }) => [
         { type: "Reviews", id: productId },
@@ -134,10 +138,10 @@ export const reviewAPI = createApi({
     }),
 
     deleteReview: builder.mutation<any, { productId: string; userId: string }>({
-      query: ({ productId, userId }) => ({
+      query: ({ productId }) => ({
         url: `delete`,
         method: "DELETE",
-        body: { productId, userId },
+        body: { productId },
       }),
       invalidatesTags: (_result, _error, { productId }) => [
         { type: "Reviews", id: productId },
@@ -170,10 +174,10 @@ export const reviewAPI = createApi({
       CreateReviewResponse,
       { productId: string; userId: string; rating: number; comment?: string }
     >({
-      query: ({ productId, userId, rating, comment }) => ({
+      query: ({ productId, rating, comment }) => ({
         url: `new`,
         method: "POST",
-        body: { productId, userId, rating, comment },
+        body: { productId, rating, comment },
       }),
       invalidatesTags: (_result, _error, { productId }) => [
         { type: "Reviews", id: productId },

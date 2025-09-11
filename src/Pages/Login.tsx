@@ -30,6 +30,8 @@ const Login: React.FC = () => {
       provider.setCustomParameters({ prompt: "select_account" });
 
       const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken(); // ✅ Firebase ID token
+      localStorage.setItem("token", token);
       const { displayName, email, photoURL, uid } = result.user;
 
       if (!email) {
@@ -43,6 +45,7 @@ const Login: React.FC = () => {
         photo: photoURL || "",
         role: "user",
         _id: uid,
+        token, // ✅ send token
       });
 
       if ("data" in res) {

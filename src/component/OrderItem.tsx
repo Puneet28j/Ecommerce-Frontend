@@ -1,14 +1,19 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { Order } from "../types/types";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion";
-// import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import { OrderDetails } from "./OrderDetails";
 import { Card } from "../components/ui/card";
+
+const statusMap: Record<string, string> = {
+  Delivered: "bg-green-700",
+  Shipped: "bg-orange-700",
+  Processing: "bg-yellow-700",
+};
 
 interface OrderItemProps {
   order: Order;
@@ -26,18 +31,17 @@ export const OrderItem = memo(
     copiedOrderId,
     onCopyOrderId,
   }: OrderItemProps) => {
-    const getStatusStyle = (status: string) => {
-      const statusMap: Record<string, string> = {
-        Delivered: "bg-green-700",
-        Shipped: "bg-orange-700",
-        Processing: "bg-yellow-700",
-      };
-      return statusMap[status] || "bg-purple-400";
-    };
+    const getStatusClass = useMemo(
+      () => statusMap[order.status] || "bg-purple-400",
+      [order.status]
+    );
 
-    const visibleItems = order.orderItems.slice(0, 3);
+    const visibleItems = useMemo(
+      () => order.orderItems.slice(0, 3),
+      [order.orderItems]
+    );
     const remaining = Math.max(order.orderItems.length - 3, 0);
-    console.log(order.orderItems.map((item) => item.productId));
+
     return (
       <Card className="border-none">
         <AccordionItem
@@ -57,6 +61,7 @@ export const OrderItem = memo(
                           key={item._id}
                           src={item.productId.photoUrl}
                           alt={item.name}
+                          loading="lazy"
                           className={`w-20 h-20 object-cover rounded-full border-2 overflow-hidden ${
                             index > 0 ? "-ml-6" : ""
                           }`}
@@ -80,10 +85,7 @@ export const OrderItem = memo(
                 </h3>
                 <div className="text-xl font-extrabold">₹ {order.total}</div>
                 <div className="text-xs font-thin">(Incl. of all taxes)</div>
-                <Badge
-                  variant="outline"
-                  className={`${getStatusStyle(order.status)}`}
-                >
+                <Badge variant="outline" className={getStatusClass}>
                   {order.status}
                 </Badge>
               </div>

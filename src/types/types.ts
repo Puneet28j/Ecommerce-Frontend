@@ -7,6 +7,7 @@ export type User = {
   role?: string;
   dob?: string;
   _id: string;
+  token?: string;
 };
 
 type RatingValue = 1 | 2 | 3 | 4 | 5;

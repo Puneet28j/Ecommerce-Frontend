@@ -11,7 +11,6 @@ const Shipping = () => {
   const { cartItems, coupon } = useSelector(
     (state: RootState) => state.cartReducer
   );
-  const { user } = useSelector((state: RootState) => state.userReducer);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,7 +36,7 @@ const Shipping = () => {
 
     try {
       const { data } = await axios.post(
-        `${server}/api/v1/payment/create?id=${user?._id}`,
+        `${server}/api/v1/payment/create`,
         {
           items: cartItems,
           shippingInfo,
@@ -46,6 +45,7 @@ const Shipping = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
