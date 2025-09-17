@@ -20,6 +20,8 @@ import {
   BarChart3Icon,
   TagsIcon,
   PackageOpenIcon,
+  Bookmark,
+  BookmarkCheck,
 } from "lucide-react";
 import { IoIosFingerPrint } from "react-icons/io";
 
@@ -31,6 +33,9 @@ interface PropsType {
 const Sidebar = ({ user, loading }: PropsType) => {
   const navigate = useNavigate();
   const { cartItems } = useSelector((state: RootState) => state.cartReducer);
+  const { ids: wishlistIds } = useSelector(
+    (state: RootState) => state.wishlist
+  );
 
   // Define common navigation items
   const commonNavItems = [
@@ -49,6 +54,12 @@ const Sidebar = ({ user, loading }: PropsType) => {
       activeIcon: <ShoppingBagIcon strokeWidth={2.5} className="w-6 h-6" />,
       inactiveIcon: <ShoppingBagIcon strokeWidth={1.5} className="w-6 h-6" />,
       badgeCount: cartItems.length,
+    },
+    {
+      path: "/wishlist",
+      activeIcon: <BookmarkCheck strokeWidth={2.5} className="w-6 h-6" />,
+      inactiveIcon: <Bookmark strokeWidth={1.5} className="w-6 h-6" />,
+      badgeCount: wishlistIds.length,
     },
     {
       path: "/orders",

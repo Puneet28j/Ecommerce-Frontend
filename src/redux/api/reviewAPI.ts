@@ -52,8 +52,9 @@ export const reviewAPI = createApi({
   reducerPath: "reviewApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/review/`,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
+    prepareHeaders: (headers, { getState }) => {
+      const state = getState() as RootState;
+      const token = state.userReducer.token || localStorage.getItem("token");
       if (token) headers.set("authorization", `Bearer ${token}`);
       return headers;
     },

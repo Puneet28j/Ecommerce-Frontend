@@ -1,13 +1,14 @@
+import axios from "axios";
+import { ShoppingCartIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { VscError } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ShoppingCartIcon, X } from "lucide-react";
 
+import CartItemCard from "../component/CartItem";
+import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
 import {
   addToCart,
   calculatePrice,
@@ -18,7 +19,6 @@ import {
   saveCoupon,
 } from "../redux/reducer/cartReducer";
 import { RootState, server } from "../redux/store";
-import CartItemCard from "../component/CartItem";
 import { CartItem } from "../types/types";
 
 const Cart = () => {
@@ -119,14 +119,16 @@ const Cart = () => {
   }
 
   return (
-    <div className="cart font-primary">
-      <Button
-        onClick={resetCartFully}
-        title="Reset Cart"
-        className={cartItems.length === 0 ? "hidden" : ""}
-      >
-        <X /> Reset Cart
-      </Button>
+    <div className=" font-primary max-w-7xl mx-auto">
+      <div className="px-4  pt-4 w-full sm:block">
+        <Button
+          onClick={resetCartFully}
+          title="Reset Cart"
+          className={`${cartItems.length === 0 ? "hidden" : "w-full sm:block"}`}
+        >
+          Reset Cart
+        </Button>
+      </div>
       <main>
         {cartItems.map((item, idx) => (
           <CartItemCard

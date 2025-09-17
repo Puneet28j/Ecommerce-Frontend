@@ -3,7 +3,9 @@ import { CartItem, ShippingInfo, User } from "./types";
 export interface UserReducerInitialState {
   user: User | null;
   loading: boolean;
+  token: string | null; // ✅ allow null when logged out
 }
+
 export interface CartReducerInitialState {
   loading: boolean;
   cartItems: CartItem[];

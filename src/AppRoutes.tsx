@@ -10,6 +10,7 @@ import Search from "./component/Search";
 import Shipping from "./Pages/Shipping";
 import Analytics from "./Pages/Admin/Analytics";
 import ManageProduct from "./Pages/Admin/ManageProduct";
+import Wishlist from "./Pages/Wishlist";
 
 // Lazy load components
 const Login = lazy(() => import("./Pages/Login"));
@@ -41,6 +42,7 @@ const AppRoutes = () => {
           <Route path={ROUTES.PRODUCT_DETAILS} element={<ProductDetails />} />
           <Route path={ROUTES.SEARCH} element={<Search />} />
           <Route element={<ProtectedRoute isAuthenticated={!!user} />}>
+            <Route path={ROUTES.WISHLIST} element={<Wishlist />} />
             <Route path={ROUTES.CART} element={<Cart />} />
             <Route path={ROUTES.ORDERS} element={<UserOrders />} />
             <Route path={ROUTES.CHECKOUT} element={<Checkout />} />

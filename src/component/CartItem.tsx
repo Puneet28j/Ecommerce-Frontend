@@ -23,17 +23,28 @@ const CartItemCard = ({
     navigate(`/product/${productId}`);
   };
 
+  // Cloudinary optimization URL function
+  const getOptimizedImage = (url: string, width = 150, height = 150) => {
+    if (!url) return "";
+    // Replace "upload/" with transformations
+    return url.replace(
+      "/upload/",
+      `/upload/f_auto,q_auto,w_${width},h_${height},c_fill/`
+    );
+  };
+
   return (
     <div
       onClick={handleCardClick}
       className="flex items-center p-4 m-4 bg-white dark:bg-black text-black dark:text-white rounded-lg shadow-md cursor-pointer"
     >
       <div className="relative">
-        <Avatar className="h-24 w-24  overflow-hidden rounded-md">
+        <Avatar className="h-24 w-24 overflow-hidden rounded-md">
           <AvatarImage
+            src={getOptimizedImage(photo[0].url, 150, 150)}
+            alt={name}
             className="object-contain object-center aspect-square border rounded-md"
-            src={photo[0].url}
-            alt="Product Image"
+            loading="lazy"
           />
           <AvatarFallback className="rounded-md">CN</AvatarFallback>
         </Avatar>
@@ -50,15 +61,15 @@ const CartItemCard = ({
           <span className="text-sm text-gray-500">Quantity:</span>
           <div
             className="ml-2 flex items-center border rounded-lg px-5 gap-3 py-1"
-            onClick={(e) => e.stopPropagation()} // Prevent navigation when clicking on quantity controls
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => decrementHandler(cartItem)}
-              disabled={quantity <= 1} // Disable when quantity is 1
+              disabled={quantity <= 1}
               className={`text-xl font-bold ${
                 quantity <= 1
-                  ? "dark:text-gray-600 text-gray-400 cursor-not-allowed" // Not clickable
-                  : "dark:text-gray-400 text-black" // Clickable
+                  ? "dark:text-gray-600 text-gray-400 cursor-not-allowed"
+                  : "dark:text-gray-400 text-black"
               }`}
             >
               <Minus size={16} />
@@ -66,11 +77,11 @@ const CartItemCard = ({
             <span className="w-5 text-center text-md">{quantity}</span>
             <button
               onClick={() => incrementHandler(cartItem)}
-              disabled={quantity >= stock} // Disable if quantity reaches stock
+              disabled={quantity >= stock}
               className={`text-lg font-bold ${
                 quantity >= stock
-                  ? "dark:text-gray-600 text-gray-400 cursor-not-allowed" // Not clickable
-                  : "dark:text-gray-400 text-black" // Clickable
+                  ? "dark:text-gray-600 text-gray-400 cursor-not-allowed"
+                  : "dark:text-gray-400 text-black"
               }`}
             >
               <Plus size={16} />
@@ -80,7 +91,7 @@ const CartItemCard = ({
       </div>
       <button
         onClick={(e) => {
-          e.stopPropagation(); // Prevent navigation when clicking the remove button
+          e.stopPropagation();
           removeHandler(productId);
         }}
         className="ml-4 hover:text-gray-200 dark:hover:text-slate-500 dark:text-white text-black"

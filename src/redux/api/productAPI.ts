@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+import { auth } from "@/firebase";
 import {
   AllProductsResponse,
   CategoriesResponse,
@@ -10,54 +10,72 @@ import {
   SearchProductsQuery,
   SearchProductsResponse,
   UpdateProductRequest,
+  WishlistResponse,
+  WishlistToggleResponse,
 } from "../../types/api-types";
+import { onAuthStateChanged } from "firebase/auth";
 
 export const productAPI = createApi({
   reducerPath: "productApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/product/`,
+    prepareHeaders: async (headers) => {
+      let currentUser = auth.currentUser;
+
+      // If currentUser is null, wait until Firebase Auth finishes initializing
+      if (!currentUser) {
+        await new Promise<void>((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            unsubscribe();
+            resolve();
+          });
+        });
+      }
+
+      if (currentUser) {
+        const token = await currentUser.getIdToken(true);
+        headers.set("authorization", `Bearer ${token}`);
+      }
+
+      return headers;
+    },
   }),
   tagTypes: ["Product"],
-  keepUnusedDataFor: 600, // Keep unused data for 10 minutes
-  refetchOnMountOrArgChange: 30, // Refetch only if 30 seconds have passed
+  keepUnusedDataFor: 600,
+  refetchOnMountOrArgChange: 30,
   endpoints: (builder) => ({
-    latestProducts: builder.query<AllProductsResponse, string>({
+    latestProducts: builder.query<AllProductsResponse, void>({
       query: () => "latest",
       providesTags: ["Product"],
     }),
-    featured: builder.query<AllProductsResponse, string>({
+    featured: builder.query<AllProductsResponse, void>({
       query: () => "featured",
       providesTags: ["Product"],
     }),
-    bestSelling: builder.query<AllProductsResponse, string>({
+    bestSelling: builder.query<AllProductsResponse, void>({
       query: () => "bestselling",
       providesTags: ["Product"],
     }),
-    budget: builder.query<AllProductsResponse, string>({
+    budget: builder.query<AllProductsResponse, void>({
       query: () => "budget",
       providesTags: ["Product"],
     }),
-    // latestProducts: builder.query<AllProductsResponse, string>({
-    //   query: () => "latest",
-    //   providesTags: ["Product"],
-    // }),
     allProducts: builder.query<AllProductsResponse, string>({
       query: (id) => `admin-products?id=${id}`,
       providesTags: ["Product"],
     }),
-    categories: builder.query<CategoriesResponse, string>({
+    categories: builder.query<CategoriesResponse, void>({
       query: () => `categories`,
       providesTags: ["Product"],
     }),
     searchProducts: builder.query<SearchProductsResponse, SearchProductsQuery>({
       query: ({ price, search, sort, category, page }) => {
         let base = `all?page=${page}`;
-
         if (search) base += `&search=${search}`;
         if (price) base += `&price=${price}`;
         if (sort) base += `&sort=${sort}`;
         if (category) base += `&category=${category}`;
-
         return base;
       },
       providesTags: ["Product"],
@@ -65,9 +83,6 @@ export const productAPI = createApi({
     productDetails: builder.query<ProductResponse, string>({
       query: (id) => `${id}`,
       providesTags: (_result, _error, id) => [{ type: "Product", id }],
-      // Cache configuration for this specific endpoint
-      keepUnusedDataFor: 600, // 10 minutes
-      extraOptions: { maxRetries: 2 }, // Optional
     }),
     newProduct: builder.mutation<MessageResponse, NewProductRequest>({
       query: ({ formData, id }) => ({
@@ -91,6 +106,20 @@ export const productAPI = createApi({
         method: "DELETE",
       }),
       invalidatesTags: ["Product"],
+    }),
+    wishlistToggle: builder.mutation<
+      WishlistToggleResponse,
+      { productId: string }
+    >({
+      query: ({ productId }) => ({
+        url: `wishlist/${productId}/toggle`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Product"],
+    }),
+    getWishlist: builder.query<WishlistResponse, void>({
+      query: () => `wishlist`,
+      providesTags: ["Product"],
     }),
   }),
 });

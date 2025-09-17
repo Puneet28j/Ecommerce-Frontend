@@ -68,7 +68,7 @@ export default function SearchPage() {
 
   // API queries
   const { data: categoriesData, isLoading: categoriesLoading } =
-    productAPI.useCategoriesQuery("");
+    productAPI.useCategoriesQuery();
   console.log("Category filter:", filters.category);
 
   const {

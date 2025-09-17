@@ -12,13 +12,13 @@ import { CartItem } from "../types/types";
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { data, isError, isLoading } = productAPI.useLatestProductsQuery("");
+  const { data, isError, isLoading } = productAPI.useLatestProductsQuery();
   const { data: FeaturedProducts, isLoading: FeaturedIsLoading } =
-    productAPI.useFeaturedQuery("");
+    productAPI.useFeaturedQuery();
   const { data: BestSellingProducts, isLoading: BestSellingIsLoading } =
-    productAPI.useBestSellingQuery("");
+    productAPI.useBestSellingQuery();
   const { data: BudgetProducts, isLoading: BudgetIsLoading } =
-    productAPI.useBudgetQuery("");
+    productAPI.useBudgetQuery();
   const addToCartHandler = (cartItem: CartItem) => {
     if (cartItem.stock < 1) return toast.error("Out of stock");
     dispatch(addToCart(cartItem));
@@ -160,7 +160,7 @@ const Home = () => {
             {FeaturedIsLoading ? (
               <LoadingProductsSection />
             ) : (
-              <div className="flex gap-6 pb-4">
+              <div className="flex gap-2 pb-4">
                 {FeaturedProducts?.products?.map((i) => (
                   <ProductCard
                     key={i._id}
@@ -208,7 +208,7 @@ const Home = () => {
             {BudgetIsLoading ? (
               <LoadingProductsSection />
             ) : (
-              <div className="flex gap-6  pb-4">
+              <div className="flex gap-2  pb-4">
                 {BudgetProducts?.products?.map((i) => (
                   <ProductCard
                     key={i._id}
@@ -244,21 +244,37 @@ const Home = () => {
 
 export default Home;
 
-const LoadingSkeletonProductCard = () => (
-  <div className="w-72 space-y-4 rounded-xl bg-card p-4 shadow-md">
-    <Skeleton className="h-52 w-full rounded-lg" />
-    <Skeleton className="h-5 w-3/4 rounded-full" />
-    <Skeleton className="h-4 w-1/2 rounded-full" />
-    <Skeleton className="h-10 w-full rounded-lg" />
+export const LoadingSkeletonProductCard = () => (
+  <div className="group relative h-full w-full rounded-2xl border bg-card shadow-md animate-pulse">
+    {/* Image */}
+    <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl">
+      <Skeleton className="h-full w-full rounded-t-2xl" />
+      {/* Stock badge */}
+      <Skeleton className="absolute left-3 top-3 h-5 w-16 rounded-full" />
+      {/* Bookmark icon */}
+      <Skeleton className="absolute right-3 top-3 h-6 w-6 rounded-full" />
+    </div>
+
+    {/* Content */}
+    <div className="mt-3 space-y-2 p-4">
+      <Skeleton className="h-5 w-3/4 rounded-full" />
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-1/2 rounded-full" />
+        <Skeleton className="h-4 w-1/4 rounded-full" />
+      </div>
+    </div>
+
+    {/* Add to cart button */}
+    <div className="px-4 pb-4">
+      <Skeleton className="h-10 w-full rounded-lg" />
+    </div>
   </div>
 );
 
 export const LoadingProductsSection = () => (
-  <div className="flex gap-4 px-2 pb-4">
-    {[1, 2, 3, 4].map((index) => (
-      <div className="flex-none" key={index}>
-        <LoadingSkeletonProductCard />
-      </div>
+  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-2 pb-4">
+    {[1, 2, 3, 4, 5, 6].map((index) => (
+      <LoadingSkeletonProductCard key={index} />
     ))}
   </div>
 );

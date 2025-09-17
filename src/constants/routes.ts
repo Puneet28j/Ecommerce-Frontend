@@ -16,4 +16,5 @@ export const ROUTES = {
   SEARCH: "/search",
   SHIPPING: "/shipping",
   COUPON: "/admin/coupon",
+  WISHLIST: "/wishlist",
 };

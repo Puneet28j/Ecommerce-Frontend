@@ -149,3 +149,16 @@ export interface ExistingPhoto {
   url: string;
   public_id: string;
 }
+
+export interface WishlistToggleResponse {
+  success: boolean;
+  action: string;
+  productId: string;
+  wishlistIds: string[];
+  count: number;
+}
+
+export interface WishlistResponse {
+  success: boolean;
+  wishlist: Product[];
+}

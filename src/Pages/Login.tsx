@@ -3,7 +3,11 @@ import { useDispatch } from "react-redux";
 import { getUser, userAPI } from "../redux/api/userAPI";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import toast from "react-hot-toast";
-import { userExist, userNotExist } from "../redux/reducer/userReducer";
+import {
+  setToken,
+  userExist,
+  userNotExist,
+} from "../redux/reducer/userReducer";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { MessageResponse } from "../types/api-types";
 import { Loader2 } from "lucide-react";
@@ -26,18 +30,22 @@ const Login: React.FC = () => {
   const loginHandler = useCallback(async () => {
     try {
       setIsLoading(true);
+
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
 
+      // ✅ Sign in with Google
       const result = await signInWithPopup(auth, provider);
-      const token = await result.user.getIdToken(); // ✅ Firebase ID token
-      localStorage.setItem("token", token);
-      const { displayName, email, photoURL, uid } = result.user;
 
+      const { displayName, email, photoURL, uid } = result.user;
+      const token = await result.user.getIdToken();
+      console.log(token);
       if (!email) {
         toast.error("Email is required for registration");
         return;
       }
+
+      dispatch(setToken(token)); // ✅ store token globally
 
       const res = await login({
         name: displayName || "No Name",
@@ -45,14 +53,15 @@ const Login: React.FC = () => {
         photo: photoURL || "",
         role: "user",
         _id: uid,
-        token, // ✅ send token
+        token,
       });
 
       if ("data" in res) {
+        // ✅ Fetch full user data after successful login
         const userData = await getUser(uid);
         if (userData?.user) {
-          dispatch(userExist(userData.user));
-          toast.success("Welcome back! 👋");
+          dispatch(userExist(userData.user)); // will persist in localStorage via reducer
+          toast.success(`Welcome back, ${userData.user.name}! 👋`);
         }
       } else {
         const error = res.error as FetchBaseQueryError;
@@ -62,7 +71,9 @@ const Login: React.FC = () => {
         dispatch(userNotExist());
       }
     } catch (error) {
+      console.error("Login failed", error);
       toast.error("Authentication failed. Please try again.");
+      dispatch(userNotExist());
     } finally {
       setIsLoading(false);
     }

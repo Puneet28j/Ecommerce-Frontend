@@ -14,6 +14,8 @@ import {
   UsersIcon,
   BarChart3Icon,
   TagsIcon,
+  Bookmark,
+  BookmarkCheck,
 } from "lucide-react";
 
 export interface NavItemConfig {
@@ -39,6 +41,12 @@ const NAV_ITEMS: NavItemConfig[] = [
     to: "/cart",
     iconActive: <ShoppingBagIcon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <ShoppingBagIcon strokeWidth={1.5} className="w-7 h-7" />,
+    showBadge: true,
+  },
+  {
+    to: "/wishlist",
+    iconActive: <BookmarkCheck strokeWidth={2.5} className="w-7 h-7" />,
+    iconInactive: <Bookmark strokeWidth={1.5} className="w-7 h-7" />,
     showBadge: true,
   },
   {
@@ -88,20 +96,23 @@ const BottomNavbar: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [lastY, setLastY] = useState(0);
   const [lastTouch, setLastTouch] = useState(0);
+
   const cartCount = useSelector(
     (state: RootState) => state.cartReducer.cartItems.length
   );
+  const wishlistCount = useSelector(
+    (state: RootState) => state.wishlist.ids.length
+  );
+
   const userRole = useSelector(
     (state: RootState) => state.userReducer.user?.role
   );
 
-  // Filter and memoize nav items
   const navItems = useMemo(
     () => NAV_ITEMS.filter((item) => !item.adminOnly || userRole === "admin"),
     [userRole]
   );
 
-  // Scroll and touch handlers
   const onScroll = useCallback(
     debounce(() => {
       const y = window.scrollY;
@@ -137,20 +148,27 @@ const BottomNavbar: React.FC = () => {
 
   return (
     <div
-      className={`fixed bottom-0 w-full transition-transform duration-300 sm:hidden bg-white dark:bg-black ${
+      className={`fixed bottom-0 w-full z-50 transition-transform duration-300 sm:hidden bg-white dark:bg-black ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
       <nav className="flex justify-around py-3">
-        {navItems.map(({ to, iconActive, iconInactive, showBadge }) => (
-          <NavItem
-            key={to}
-            to={to}
-            iconActive={iconActive}
-            iconInactive={iconInactive}
-            badgeCount={showBadge ? cartCount : undefined}
-          />
-        ))}
+        {navItems.map(({ to, iconActive, iconInactive }) => {
+          let badgeCount: number | undefined = undefined;
+
+          if (to === "/cart") badgeCount = cartCount;
+          else if (to === "/wishlist") badgeCount = wishlistCount;
+
+          return (
+            <NavItem
+              key={to}
+              to={to}
+              iconActive={iconActive}
+              iconInactive={iconInactive}
+              badgeCount={badgeCount}
+            />
+          );
+        })}
       </nav>
     </div>
   );
