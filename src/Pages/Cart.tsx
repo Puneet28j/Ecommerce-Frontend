@@ -263,15 +263,13 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
 }) => {
   const navigate = useNavigate();
   return (
-    <Card className="bg-white dark:bg-gray-900 shadow-lg rounded-lg p-4 m-4 w-full">
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-        Order Summary
-      </h2>
+    <Card className=" shadow-lg rounded-lg p-4 m-4 w-full">
+      <h2 className="text-lg font-semibold  mb-4">Order Summary</h2>
       <PriceDetail label="Subtotal" value={subTotal} />
       <PriceDetail label="Shipping Charges" value={shippingCharges} />
       <PriceDetail label="Tax" value={tax} />
       <PriceDetail label="Discount" value={discount} isDiscount />
-      <hr className="my-3 border-gray-300 dark:border-gray-700" />
+      <hr className="my-3 " />
       <PriceDetail label="Total" value={total} />
       <CouponInput
         couponCode={couponCode}
@@ -280,11 +278,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
         discount={discount}
       />
       {cartItems.length > 0 && (
-        <Button
-          onClick={() => navigate("/shipping")}
-          variant="outline"
-          className="w-full mt-4"
-        >
+        <Button onClick={() => navigate("/shipping")} className="w-full mt-4">
           Proceed to Checkout
         </Button>
       )}

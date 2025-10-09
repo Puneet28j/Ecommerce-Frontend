@@ -41,7 +41,7 @@ export const productAPI = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Product"],
+  tagTypes: ["Product", "Wishlist"], // ✅ Add Wishlist tag
   keepUnusedDataFor: 600,
   refetchOnMountOrArgChange: 30,
   endpoints: (builder) => ({
@@ -115,11 +115,13 @@ export const productAPI = createApi({
         url: `wishlist/${productId}/toggle`,
         method: "POST",
       }),
-      invalidatesTags: ["Product"],
+      // ✅ Invalidate Wishlist tag to refetch wishlist data
+      invalidatesTags: ["Wishlist"],
     }),
     getWishlist: builder.query<WishlistResponse, void>({
       query: () => `wishlist`,
-      providesTags: ["Product"],
+      // ✅ Provide Wishlist tag instead of Product
+      providesTags: ["Wishlist"],
     }),
   }),
 });

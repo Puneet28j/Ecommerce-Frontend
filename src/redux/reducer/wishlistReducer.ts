@@ -1,4 +1,4 @@
-// wishlistSlice.ts
+// ============================================
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface WishlistState {
@@ -6,7 +6,7 @@ export interface WishlistState {
 }
 
 const initialState: WishlistState = {
-  ids: JSON.parse(localStorage.getItem("wishlistIds") || "[]"), // persist
+  ids: [], // ✅ Start empty - will be populated from backend on login
 };
 
 export const wishlistReducer = createSlice({
@@ -15,7 +15,7 @@ export const wishlistReducer = createSlice({
   reducers: {
     setWishlist: (state, action: PayloadAction<string[]>) => {
       state.ids = action.payload;
-      localStorage.setItem("wishlistIds", JSON.stringify(state.ids));
+      // ❌ Removed localStorage - backend is source of truth
     },
     toggleWishlistId: (state, action: PayloadAction<string>) => {
       if (state.ids.includes(action.payload)) {
@@ -23,11 +23,11 @@ export const wishlistReducer = createSlice({
       } else {
         state.ids.push(action.payload);
       }
-      localStorage.setItem("wishlistIds", JSON.stringify(state.ids));
+      // ❌ Removed localStorage
     },
     clearWishlist: (state) => {
       state.ids = [];
-      localStorage.removeItem("wishlistIds");
+      // ✅ Clean state on logout
     },
   },
 });
