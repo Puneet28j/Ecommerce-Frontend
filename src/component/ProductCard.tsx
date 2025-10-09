@@ -1,17 +1,16 @@
-import { Bookmark } from "lucide-react";
+import { productAPI } from "@/redux/api/productAPI";
+import { setWishlist } from "@/redux/reducer/wishlistReducer";
 import React from "react";
+import toast from "react-hot-toast";
+import { BiError } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { CartItem } from "../types/types";
-import { UserReducerInitialState } from "../types/reducer-types";
-import { useSelector, useDispatch } from "react-redux";
-import toast from "react-hot-toast";
-import { BiError } from "react-icons/bi";
-import { cn } from "../lib/utils";
 import { StarRating } from "../Pages/ProductDetails";
-import { productAPI } from "@/redux/api/productAPI";
-import { setWishlist } from "@/redux/reducer/wishlistReducer";
+import { UserReducerInitialState } from "../types/reducer-types";
+import { CartItem } from "../types/types";
+import AnimatedBookmark from "./AnimatedBookmark";
 
 type ProductsProps = {
   productId: string;
@@ -62,14 +61,15 @@ const ProductCard = ({
     handler({ productId, photo, price, stock, name, quantity: 1 });
   };
 
-  const handleBookmarkToggle = async (e: React.MouseEvent<SVGElement>) => {
+  // ✅ FIXED: Event type is now HTML element safe
+  const handleBookmarkToggle = async (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (!user) return showErrorToast("Login First");
 
     try {
       const res = await wishlistToggle({ productId }).unwrap();
 
-      // ✅ Use backend response to set Redux store
+      // ✅ Update Redux store with backend response
       dispatch(setWishlist(res.wishlistIds));
 
       toast.success(
@@ -125,14 +125,11 @@ const ProductCard = ({
           )}
         </div>
 
-        <Bookmark
+        {/* ✅ Animated bookmark button */}
+        <AnimatedBookmark
+          isBookmarked={isBookmarked}
           onClick={handleBookmarkToggle}
-          className={cn(
-            "absolute right-3 top-3 z-20 h-6 w-6 cursor-pointer transition-colors",
-            isBookmarked
-              ? "fill-yellow-400 stroke-yellow-500 hover:fill-yellow-300"
-              : "stroke-gray-400 fill-transparent hover:fill-gray-200"
-          )}
+          isLoading={isLoading} // ✅ fixed variable name
         />
       </div>
 
