@@ -88,13 +88,16 @@ export type LineResponse = {
   success: boolean;
   charts: Line;
 };
+
 export type SearchProductsQuery = {
-  price: string;
-  page: number;
-  category: string;
-  search: string;
-  sort: string;
+  search?: string;
+  sort?: string;
+  category?: string;
+  minPrice?: string | number;
+  maxPrice?: string | number;
+  page?: number;
 };
+
 export type NewProductRequest = {
   id: string;
   formData: FormData;

@@ -169,7 +169,7 @@ const ProductHeader = memo(
             {isLoading ? (
               <Skeleton className="h-9 w-3/4 rounded-full animate-pulse" />
             ) : (
-              <h1 className="text-3xl font-bold text-gray-800">
+              <h1 className="text-3xl font-bold text-primary">
                 {product?.name}
               </h1>
             )}

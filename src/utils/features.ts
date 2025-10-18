@@ -81,3 +81,10 @@ export const formatYAxisValue = (value: number) => {
   if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`; // 1K+
   return value.toString(); // Below 1K stays the same
 };
+
+export const calculateStars = (averageRating: number = 0) => {
+  const fullStars = Math.floor(averageRating);
+  const hasHalfStar = averageRating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  return { fullStars, hasHalfStar, emptyStars };
+};

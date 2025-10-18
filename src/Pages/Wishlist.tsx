@@ -36,10 +36,34 @@ const Wishlist = () => {
 
   if (data?.wishlist?.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-center">
-        <p className="border py-2 px-4 rounded-sm text-gray-600">
+      <div className="flex flex-col items-center justify-center h-[70vh] text-center space-y-6">
+        {/* Empty illustration (you can replace with your SVG or image later) */}
+        <div className="w-40 h-40">
+          <img
+            src="https://illustrations.popsy.co/gray/love-heart.svg"
+            alt="Empty Wishlist"
+            className="w-full h-full object-contain opacity-80"
+          />
+        </div>
+
+        {/* Headline */}
+        <h2 className="text-2xl font-semibold text-gray-800">
           Your wishlist is empty ❤️
+        </h2>
+
+        {/* Subtext */}
+        <p className="text-gray-500 max-w-md">
+          Looks like you haven’t added anything yet. Start exploring our
+          products and save your favorites for later!
         </p>
+
+        {/* Action button */}
+        <button
+          onClick={() => (window.location.href = "/")}
+          className="px-6 py-3 bg-primary text-white font-medium rounded-lg shadow-md hover:bg-primary/90 transition-all"
+        >
+          Browse Products →
+        </button>
       </div>
     );
   }

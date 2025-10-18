@@ -8,6 +8,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { productAPI } from "../redux/api/productAPI";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
+import { BiRightArrow } from "react-icons/bi";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -36,14 +37,20 @@ const Home = () => {
 
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8 space-y-12">
-      <header className="text-center space-y-4">
-        <CardTitle className="hidden sm:block font-extrabold text-5xl md:text-6xl tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          Ecommerce
-        </CardTitle>
-        <p className="text-muted-foreground text-lg">
-          Discover amazing products at great prices
+      <section className="relative  dark:text-black bg-gradient-to-r from-primary to-primary/70 text-white rounded-2xl p-10 flex flex-col items-center justify-center text-center">
+        <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
+          Shop Smarter
+        </h1>
+        <p className="text-lg opacity-90 font-primary mb-6">
+          Discover premium products at unbeatable prices
         </p>
-      </header>
+        <button
+          onClick={() => navigate("/search")}
+          className="bg-white dark:bg-gray-900 flex items-center gap-1 shadow-sm shadow-gray-400  text-primary font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition"
+        >
+          Start Shopping <BiRightArrow />
+        </button>
+      </section>
 
       <section className="space-y-2">
         <div className="flex items-center justify-between px-2">
@@ -68,7 +75,7 @@ const Home = () => {
                   <ProductCard
                     key={i._id}
                     productId={i._id}
-                    name={"This is the first product card just for testing"}
+                    name={i.name}
                     price={i.price}
                     stock={i.stock}
                     handler={addToCartHandler}

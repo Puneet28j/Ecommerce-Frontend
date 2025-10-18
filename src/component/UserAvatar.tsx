@@ -42,13 +42,13 @@ const AvatarImage = React.forwardRef<
       src={src}
       alt={alt}
       loading="lazy"
-      className={`w-10 h-10 rounded-full object-cover ${className || ""}`}
+      className={`w-10 h-10 rounded-full object-cover block ${className || ""}`}
       onError={() => setImageError(true)}
       ref={ref as React.MutableRefObject<HTMLImageElement>}
     />
   ) : (
     <UserIcon
-      className={`w-10 h-10 p-2 bg-gray-800 rounded-full text-gray-400 ${
+      className={`w-10 h-10 p-2 bg-gray-800 rounded-full text-gray-400 block ${
         className || ""
       }`}
       ref={ref as React.MutableRefObject<SVGSVGElement>}
@@ -84,7 +84,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
         <DropdownMenuTrigger asChild>
           <Button
             size="icon"
-            className="overflow-hidden rounded-full border-2 border-black dark:border-white"
+            className="overflow-hidden rounded-full border-2 border-black dark:border-white block "
             ref={ref as unknown as React.MutableRefObject<HTMLButtonElement>}
           >
             <TooltipProvider>

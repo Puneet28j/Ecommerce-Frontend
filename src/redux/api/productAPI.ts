@@ -70,16 +70,25 @@ export const productAPI = createApi({
       providesTags: ["Product"],
     }),
     searchProducts: builder.query<SearchProductsResponse, SearchProductsQuery>({
-      query: ({ price, search, sort, category, page }) => {
-        let base = `all?page=${page}`;
-        if (search) base += `&search=${search}`;
-        if (price) base += `&price=${price}`;
-        if (sort) base += `&sort=${sort}`;
-        if (category) base += `&category=${category}`;
-        return base;
+      query: ({ search, sort, category, minPrice, maxPrice, page }) => {
+        const params = new URLSearchParams();
+
+        // Pagination
+        params.append("page", String(page || 1));
+
+        // Filters
+        if (search) params.append("search", search.trim());
+        if (category && category !== "all") params.append("category", category);
+        if (sort && sort !== "default") params.append("sort", sort);
+        if (minPrice) params.append("minPrice", String(minPrice));
+        if (maxPrice) params.append("maxPrice", String(maxPrice));
+
+        // Build URL
+        return `all?${params.toString()}`;
       },
       providesTags: ["Product"],
     }),
+
     productDetails: builder.query<ProductResponse, string>({
       query: (id) => `${id}`,
       providesTags: (_result, _error, id) => [{ type: "Product", id }],

@@ -103,7 +103,6 @@ const BottomNavbar: React.FC = () => {
   const wishlistCount = useSelector(
     (state: RootState) => state.wishlist.ids.length
   );
-
   const userRole = useSelector(
     (state: RootState) => state.userReducer.user?.role
   );
@@ -113,15 +112,17 @@ const BottomNavbar: React.FC = () => {
     [userRole]
   );
 
+  // Scroll hide/show logic (debounced)
   const onScroll = useCallback(
     debounce(() => {
       const y = window.scrollY;
-      setVisible(y < lastY);
+      setVisible(y < lastY || y < 80); // don’t hide immediately at top
       setLastY(y);
     }, 100),
     [lastY]
   );
 
+  // Touch events for mobile
   const onTouchStart = useCallback(
     (e: TouchEvent) => setLastTouch(e.touches[0].clientY),
     []
@@ -148,14 +149,14 @@ const BottomNavbar: React.FC = () => {
 
   return (
     <div
-      className={`fixed bottom-0 w-full z-50 transition-transform duration-300 sm:hidden bg-white dark:bg-black ${
-        visible ? "translate-y-0" : "translate-y-full"
-      }`}
+      className={`fixed bottom-0 left-0 w-full z-50 sm:hidden backdrop-blur-md border-t border-gray-200/20 dark:border-gray-700/30 
+        transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] 
+        ${visible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}
+      `}
     >
-      <nav className="flex justify-around py-3">
+      <nav className="flex justify-around items-center py-3 bg-white/70 dark:bg-black/70 backdrop-blur-lg">
         {navItems.map(({ to, iconActive, iconInactive }) => {
-          let badgeCount: number | undefined = undefined;
-
+          let badgeCount: number | undefined;
           if (to === "/cart") badgeCount = cartCount;
           else if (to === "/wishlist") badgeCount = wishlistCount;
 

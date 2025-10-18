@@ -11,7 +11,7 @@ const CarouselButtons = ({ handlePrev, handleNext }: CarouselButtonsProps) => {
         onClick={handlePrev}
         className="
           absolute hidden sm:flex items-center justify-center top-1/2 transform -translate-y-1/2
-          bg-gray-700/80 text-white p-2 rounded-full hover:bg-gray-800 transition-colors z-30 left-6
+          bg-gray-700/80 text-white p-2 rounded-full hover:bg-gray-800 transition-colors z-30 left-28
         "
         aria-label="Previous slide"
       >
@@ -22,7 +22,7 @@ const CarouselButtons = ({ handlePrev, handleNext }: CarouselButtonsProps) => {
         onClick={handleNext}
         className="
           absolute hidden sm:flex items-center justify-center top-1/2 transform -translate-y-1/2
-          bg-gray-700/80 text-white p-2 rounded-full hover:bg-gray-800 transition-colors z-30 right-6
+          bg-gray-700/80 text-white p-2 rounded-full hover:bg-gray-800 transition-colors z-30 right-28
         "
         aria-label="Next slide"
       >
