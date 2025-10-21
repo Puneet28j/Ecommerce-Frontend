@@ -119,7 +119,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   return (
-    <Card className="max-w-4xl mx-auto mb-4 border-none">
+    <Card className="max-w-4xl mx-auto mb-4 border-none bg-primary-foreground">
       <CardHeader>
         <h2 className="text-lg font-bold dark:text-white text-black font-primary">
           {existingReview ? "Update Your Review" : "Write a Review"}
@@ -144,8 +144,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       </CardContent>
       <CardFooter>
         <Button
-          variant="secondary"
-          className={`w-full rounded-lg font-primary font-thin ${
+          variant="outline"
+          className={`w-full rounded-lg text-popover bg-foreground  font-thin ${
             isCreating || isUpdating ? "opacity-50 cursor-not-allowed" : ""
           }`}
           type="submit"

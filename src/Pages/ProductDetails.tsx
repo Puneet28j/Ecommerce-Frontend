@@ -266,7 +266,7 @@ interface StarRatingProps {
   className?: string;
   /**
    * Size of the star icon in pixels.
-   * @default 24
+   * @default 16
    */
   size?: number;
   /**
@@ -274,6 +274,11 @@ interface StarRatingProps {
    * @default true
    */
   showRatingCount?: boolean;
+  /**
+   * Compact mode - shows just stars and number without "reviews" text
+   * @default false
+   */
+  compact?: boolean;
 }
 
 export const StarRating = memo(
@@ -283,49 +288,99 @@ export const StarRating = memo(
     emptyStars,
     ratingCount,
     className = "",
-    size = 24,
+    size = 16,
     showRatingCount = true,
+    compact = false,
   }: StarRatingProps) => {
-    // Define inline style based on the provided size
-    const iconStyle = { width: size, height: size };
+    // Calculate actual rating for display
+    const rating = (fullStars + (hasHalfStar ? 0.5 : 0)).toFixed(1);
+
+    // Dynamic sizing based on star size
+    const textSize =
+      size <= 14 ? "text-[10px]" : size <= 18 ? "text-xs" : "text-sm";
+    const starGap = size <= 14 ? "gap-0.5" : "gap-1";
 
     return (
-      <div className={`flex items-center  space-x-1 ${className}`}>
-        {Array(fullStars)
-          .fill(0)
-          .map((_, index) => (
-            <StarIcon
-              key={`full-${index}`}
-              style={iconStyle}
-              className="fill-yellow-500 text-yellow-500"
-            />
-          ))}
-        {hasHalfStar && (
-          <div className="relative" aria-label="Half Star" style={iconStyle}>
-            <StarIcon
-              style={iconStyle}
-              className="absolute inset-0 text-gray-300 fill-gray-300"
-            />
-            <StarIcon
-              style={iconStyle}
-              className="absolute inset-0 text-yellow-500 fill-yellow-500 half-star-mask"
-            />
-          </div>
-        )}
+      <div className={`flex items-center ${className}`}>
+        {/* Stars container */}
+        <div className={`flex items-center ${starGap} flex-shrink-0`}>
+          {/* Full stars */}
+          {Array(fullStars)
+            .fill(0)
+            .map((_, index) => (
+              <StarIcon
+                key={`full-${index}`}
+                size={size}
+                className="fill-amber-400 text-amber-400"
+                strokeWidth={1.5}
+              />
+            ))}
 
-        {Array(emptyStars)
-          .fill(0)
-          .map((_, index) => (
-            <StarIcon
-              key={`empty-${index}`}
-              style={iconStyle}
-              className="fill-gray-300 text-gray-300"
-            />
-          ))}
+          {/* Half star */}
+          {hasHalfStar && (
+            <div
+              className="relative flex-shrink-0"
+              style={{ width: size, height: size }}
+              aria-label="Half Star"
+            >
+              <StarIcon
+                size={size}
+                className="absolute inset-0 fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600"
+                strokeWidth={1.5}
+              />
+              <div
+                className="absolute inset-0 overflow-hidden"
+                style={{ width: `${size / 2}px` }}
+              >
+                <StarIcon
+                  size={size}
+                  className="fill-amber-400 text-amber-400"
+                  strokeWidth={1.5}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Empty stars */}
+          {Array(emptyStars)
+            .fill(0)
+            .map((_, index) => (
+              <StarIcon
+                key={`empty-${index}`}
+                size={size}
+                className="fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600"
+                strokeWidth={1.5}
+              />
+            ))}
+        </div>
+
+        {/* Rating info */}
         {showRatingCount && (
-          <span className="ml-2 text-gray-600">({ratingCount} reviews)</span>
+          <div
+            className={`flex items-center ml-1.5 ${textSize} text-gray-600 dark:text-gray-400 whitespace-nowrap`}
+          >
+            {compact ? (
+              // Compact mode: "4.5 (123)"
+              <span className="font-medium">
+                {rating}{" "}
+                <span className="text-gray-400 dark:text-gray-500">
+                  ({ratingCount})
+                </span>
+              </span>
+            ) : (
+              // Full mode: "4.5 (123 reviews)"
+              <span className="font-medium">
+                {rating}{" "}
+                <span className="text-gray-400 dark:text-gray-500 font-normal">
+                  ({ratingCount} {ratingCount === 1 ? "review" : "reviews"})
+                </span>
+              </span>
+            )}
+          </div>
         )}
       </div>
     );
   }
 );
+
+StarRating.displayName = "StarRating";

@@ -29,7 +29,7 @@ export const ReviewList = memo(
 
     return (
       <div className="space-y-6">
-        <ol role="list" className="divide-y divide-gray-800">
+        <ol role="list" className="space-y-2">
           {reviews.map((review, index) => (
             <li key={review._id}>
               <ReviewCard

@@ -6,7 +6,7 @@ import { BiError } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
+import { Card } from "../components/ui/card";
 import { StarRating } from "../Pages/ProductDetails";
 import { UserReducerInitialState } from "../types/reducer-types";
 import { CartItem } from "../types/types";
@@ -61,15 +61,12 @@ const ProductCard = ({
     handler({ productId, photo, price, stock, name, quantity: 1 });
   };
 
-  // ✅ FIXED: Event type is now HTML element safe
   const handleBookmarkToggle = async (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (!user) return showErrorToast("Login First");
 
     try {
       const res = await wishlistToggle({ productId }).unwrap();
-
-      // ✅ Update Redux store with backend response
       dispatch(setWishlist(res.wishlistIds));
 
       toast.success(
@@ -99,9 +96,10 @@ const ProductCard = ({
   return (
     <Card
       onClick={handleViewProduct}
-      className="group relative h-full overflow-hidden rounded-2xl border bg-white dark:bg-gray-900 shadow-md transition hover:shadow-xl cursor-pointer"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border bg-white dark:bg-gray-900 shadow-sm transition hover:shadow-lg cursor-pointer"
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl">
+      {/* Image Container - Compact aspect ratio */}
+      <div className="relative aspect-square w-full flex-shrink-0 overflow-hidden">
         <img
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           src={photo[0].url.replace(
@@ -112,58 +110,68 @@ const ProductCard = ({
           loading="lazy"
         />
 
-        <div className="absolute left-3 top-3 z-10">
+        {/* Stock Badge */}
+        <div className="absolute left-2 top-2 z-10">
           {stock === 0 && (
-            <span className="rounded-full bg-red-500/90 px-3 py-1 text-xs text-white font-medium">
+            <span className="rounded-full bg-red-500/90 px-2 py-0.5 text-[10px] text-white font-medium shadow-sm">
               Out of Stock
             </span>
           )}
           {stock > 0 && stock <= LOW_STOCK_LIMIT && (
-            <span className="rounded-full bg-amber-500 px-3 py-1 text-xs text-white font-medium">
-              Only {stock} left
+            <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] text-white font-medium shadow-sm">
+              {stock} left
             </span>
           )}
         </div>
 
-        {/* ✅ Animated bookmark button */}
+        {/* Bookmark Button */}
         <AnimatedBookmark
           isBookmarked={isBookmarked}
           onClick={handleBookmarkToggle}
-          isLoading={isLoading} // ✅ fixed variable name
+          isLoading={isLoading}
         />
       </div>
 
-      <CardContent className="p-4">
-        <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 dark:text-white">
+      {/* Content Container - Compact and efficient */}
+      <div className="flex flex-1 flex-col p-3">
+        {/* Product Name - Compact with fixed height */}
+        <h3 className="line-clamp-2 min-h-[1.5rem] text-xs font-semibold text-gray-900 dark:text-white leading-tight mb-2">
           {name}
         </h3>
 
-        <div className="mt-3 sm:flex items-center justify-between">
+        {/* Spacer */}
+        <div className="flex-1 min-h-[4px]" />
+
+        {/* Rating - Compact */}
+        <div className="mb-2">
           <StarRating
             fullStars={fullStars}
             hasHalfStar={hasHalfStar}
             emptyStars={emptyStars}
             ratingCount={reviewCount}
-            size={14}
-            showRatingCount={false}
+            size={12}
+            compact={true} // Shows: "4.5 (156)"
           />
-          <p className="text-lg font-bold text-primary">{formattedPrice}</p>
         </div>
-      </CardContent>
 
-      {stock > 0 && (
-        <div className="px-4 pb-4">
+        {/* Price - Full width, separate line */}
+        <p className="text-base font-bold text-primary mb-2 truncate">
+          {formattedPrice}
+        </p>
+
+        {/* Add to Cart Button - Compact */}
+        {stock > 0 && (
           <Button
             onClick={handleAddToCart}
             variant="default"
             size="sm"
             disabled={isLoading}
-            className="w-full rounded-lg font-medium shadow-sm hover:shadow-md transition"
+            className="w-full h-8 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition"
           >
             Add to Cart
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </Card>
   );
 };

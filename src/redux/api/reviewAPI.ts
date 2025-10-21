@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Product } from "../../types/types";
 import type { RootState } from "../../redux/store";
+import { auth } from "@/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 export interface Review {
   _id: string;
@@ -52,10 +54,25 @@ export const reviewAPI = createApi({
   reducerPath: "reviewApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/review/`,
-    prepareHeaders: (headers, { getState }) => {
-      const state = getState() as RootState;
-      const token = state.userReducer.token || localStorage.getItem("token");
-      if (token) headers.set("authorization", `Bearer ${token}`);
+    prepareHeaders: async (headers) => {
+      let currentUser = auth.currentUser;
+
+      // If currentUser is null, wait until Firebase Auth finishes initializing
+      if (!currentUser) {
+        await new Promise<void>((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            unsubscribe();
+            resolve();
+          });
+        });
+      }
+
+      if (currentUser) {
+        const token = await currentUser.getIdToken(true);
+        headers.set("authorization", `Bearer ${token}`);
+      }
+
       return headers;
     },
   }),

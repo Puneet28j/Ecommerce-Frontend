@@ -17,6 +17,7 @@ import {
   Bookmark,
   BookmarkCheck,
 } from "lucide-react";
+import { ModeToggle } from "../ModeToggle";
 
 export interface NavItemConfig {
   to: string;
@@ -170,6 +171,7 @@ const BottomNavbar: React.FC = () => {
             />
           );
         })}
+        <ModeToggle />
       </nav>
     </div>
   );

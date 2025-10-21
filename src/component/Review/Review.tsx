@@ -15,7 +15,7 @@ export const Reviews: React.FC<ReviewsProps> = ({
     useReviews(productId);
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-3 2xl:px-0 py-6">
+    <div className="w-full max-w-4xl mx-auto px-3 2xl:px-0  py-6">
       {/* Review Form */}
       {isLoading ? (
         <ReviewFormSkeleton />

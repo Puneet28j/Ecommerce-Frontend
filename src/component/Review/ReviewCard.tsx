@@ -30,7 +30,7 @@ export const ReviewCard = memo(({ review, role }: ReviewCardProps) => {
   return (
     <article
       role={role}
-      className="group border-b border-gray-800 last:border-0 bg-black p-4 hover:bg-gray-800/30 transition-colors rounded-lg"
+      className="group  bg-primary-foreground shadow-md p-4 hover:bg-gray-800/30 transition-colors rounded-lg"
       aria-labelledby={`review-author-${review?.user?._id}`}
     >
       <div className="flex gap-4 font-primary">
@@ -43,7 +43,7 @@ export const ReviewCard = memo(({ review, role }: ReviewCardProps) => {
           <header className="flex items-center justify-between">
             <h3
               id={`review-author-${review?.user?._id}`}
-              className="font-semibold text-white text-lg"
+              className="font-semibold text-primary text-lg"
             >
               {review?.user?.name}
             </h3>

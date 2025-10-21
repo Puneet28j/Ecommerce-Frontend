@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeftIcon } from "lucide-react";
 import { IoIosFingerPrint } from "react-icons/io";
+import { useLocation, useNavigate } from "react-router-dom";
 import { User } from "../../types/types";
 import BreadCrumb from "../BreadCrumb";
-import { ModeToggle } from "../ModeToggle";
 import UserAvatar from "../UserAvatar";
-import { motion } from "framer-motion";
+
 interface PropsType {
   user: User | null;
   loading: boolean;
@@ -12,18 +13,35 @@ interface PropsType {
 
 const Header = ({ user, loading }: PropsType) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  const isHomePage = location.pathname === "/";
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b justify-between bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      {/* Breadcrumb (desktop only) */}
       <div className="hidden sm:block sm:ml-10">
         <BreadCrumb />
       </div>
-      <div className="block sm:hidden">
-        <ModeToggle />
+
+      {/* Left icons (mobile) */}
+      <div className="flex items-center gap-3 sm:hidden">
+        {/* Show back arrow only if not home */}
+        {!isHomePage && (
+          <ArrowLeftIcon
+            onClick={goBack}
+            className="size-6 text-gray-600 dark:text-gray-300 cursor-pointer hover:scale-110 transition-transform"
+          />
+        )}
       </div>
+
+      {/* Right section (mobile user / login / loader) */}
       <div className="sm:hidden flex items-center">
         {loading ? (
-          // Skeleton Loader with Animation
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -32,11 +50,11 @@ const Header = ({ user, loading }: PropsType) => {
           />
         ) : !user?._id ? (
           <button onClick={() => navigate("/login")}>
-            <IoIosFingerPrint className="h-10 w-10 cursor-pointer text-gray-400 hover:text-gray-300 transition-all" />
+            <IoIosFingerPrint className="h-8 w-8 cursor-pointer text-gray-400 hover:text-gray-300 transition-all" />
           </button>
         ) : (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
