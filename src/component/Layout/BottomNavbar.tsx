@@ -151,7 +151,8 @@ const BottomNavbar: React.FC = () => {
   return (
     <div
       className={`fixed bottom-0 left-0 w-full z-50 sm:hidden backdrop-blur-md border-t border-gray-200/20 dark:border-gray-700/30 
-        transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] 
+        transition-all duration-500 ease-&lsqb;cubic-bezier(0.16,1,0.3,1)&rsqb;
+
         ${visible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}
       `}
     >

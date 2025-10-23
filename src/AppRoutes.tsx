@@ -19,7 +19,7 @@ const UserOrders = lazy(() => import("./Pages/UserOrders"));
 const Checkout = lazy(() => import("./Pages/Admin/Checkout"));
 const Home = lazy(() => import("./Pages/Home"));
 const ProductDetails = lazy(() => import("./Pages/ProductDetails"));
-const Cart = lazy(() => import("./Pages/Cart"));
+const Cart = lazy(() => import("./Pages/Cart/Cart"));
 const AdminDashboard = lazy(() => import("./Pages/Admin/Dashboard"));
 const AdminProducts = lazy(() => import("./Pages/Admin/Products"));
 const OrdersTable = lazy(() => import("./component/Table/OrdersTable"));

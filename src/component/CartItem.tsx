@@ -36,7 +36,7 @@ const CartItemCard = ({
   return (
     <div
       onClick={handleCardClick}
-      className="flex items-center p-4 m-4 bg-white dark:bg-black text-black dark:text-white rounded-lg shadow-md cursor-pointer"
+      className="flex items-center p-1 sm:p-4 m-4 bg-white dark:bg-black text-black dark:text-white rounded-lg shadow-md cursor-pointer"
     >
       <div className="relative">
         <Avatar className="h-24 w-24 overflow-hidden rounded-md">
@@ -55,12 +55,12 @@ const CartItemCard = ({
         )}
       </div>
       <div className="ml-4 flex flex-col flex-1 overflow-hidden">
-        <h3 className="text-lg truncate font-bold">{name}</h3>
+        <h3 className="text-sm sm:text-lg truncate font-bold">{name}</h3>
         <p className="text-sm text-gray-600">INR {price}</p>
         <div className="flex items-center mt-2">
           <span className="text-sm text-gray-500">Quantity:</span>
           <div
-            className="ml-2 flex items-center border rounded-lg px-5 gap-3 py-1"
+            className="ml-2 flex items-center border rounded-lg px-3 sm:px-5 gap-3 py-1"
             onClick={(e) => e.stopPropagation()}
           >
             <button

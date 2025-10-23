@@ -209,3 +209,28 @@ export interface ReviewsResponse {
   page: number;
   totalPages: number;
 }
+
+export interface CouponDetail {
+  _id: string;
+  coupon: string;
+  amount: number;
+}
+
+export interface CheckoutSummaryProps {
+  subTotal: number;
+  shippingCharges: number;
+  tax: number;
+  discount: number;
+  total: number;
+  cartItems: any[];
+  isValidCouponCode: boolean;
+  couponCode: string;
+  handleCouponChange: (value: string) => void;
+}
+
+export interface CouponInputProps {
+  couponCode: string;
+  handleCouponChange: (value: string) => void;
+  isValidCouponCode: boolean;
+  discount: number;
+}
