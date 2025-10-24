@@ -8,6 +8,10 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
+import axios from "axios";
+import { auth } from "../firebase"; // adjust path
+import { onAuthStateChanged } from "firebase/auth";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -66,3 +70,35 @@ export default function ScrollToTop() {
 
   return null;
 }
+
+export const api = axios.create({
+  baseURL: `${import.meta.env.VITE_SERVER}/api/v1`,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor to attach Firebase token automatically
+api.interceptors.request.use(
+  async (config) => {
+    let currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      await new Promise<void>((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          unsubscribe();
+          resolve();
+        });
+      });
+    }
+
+    if (currentUser) {
+      const token = await currentUser.getIdToken(true);
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);

@@ -1,11 +1,11 @@
-import axios from "axios";
+import { api } from "@/lib/utils";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BiArrowBack } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { RootState, server } from "../redux/store";
 import { saveShippingInfo } from "../redux/reducer/cartReducer";
+import { RootState } from "../redux/store";
 
 const Shipping = () => {
   const { cartItems, coupon } = useSelector(
@@ -35,20 +35,11 @@ const Shipping = () => {
     dispatch(saveShippingInfo(shippingInfo));
 
     try {
-      const { data } = await axios.post(
-        `${server}/api/v1/payment/create`,
-        {
-          items: cartItems,
-          shippingInfo,
-          coupon,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const { data } = await api.post("/payment/create", {
+        items: cartItems,
+        shippingInfo,
+        coupon,
+      });
       setLoading(true);
       navigate("/pay", {
         state: data.clientSecret,
