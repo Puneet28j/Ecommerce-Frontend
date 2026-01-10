@@ -138,12 +138,23 @@ export const useOrderPagination = (
 
   useEffect(() => {
     if (data?.orders) {
-      setOrders((prev) => [
-        ...prev,
-        ...data.orders.filter(
+      setOrders((prev) => {
+        const incomingOrdersMap = new Map(
+          data.orders.map((order: any) => [order._id, order])
+        );
+
+        // Update existing orders in the list if they are present in the new data
+        const updatedPrev = prev.map((prevOrder) =>
+          incomingOrdersMap.get(prevOrder._id) || prevOrder
+        );
+
+        // Append only truly new orders that weren't in the list at all
+        const newOrders = data.orders.filter(
           (order: any) => !prev.some((prevOrder) => prevOrder._id === order._id)
-        ),
-      ]);
+        );
+
+        return [...updatedPrev, ...newOrders];
+      });
       setHasMore(data.pagination?.currentPage < data.pagination?.totalPages);
     }
   }, [data, setOrders, setHasMore]);
