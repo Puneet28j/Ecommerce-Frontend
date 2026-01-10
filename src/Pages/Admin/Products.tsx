@@ -22,15 +22,32 @@ import { RootState } from "../../redux/store";
 import { NewProduct } from "../NewProduct";
 import { Link } from "react-router-dom";
 
+// Demo products data for showcase
+const demoProducts = [
+  { _id: "demo1", name: "Premium Wireless Headphones", category: "Electronics", price: 299, stock: 45, photo: [{ url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop" }], createdAt: new Date().toISOString() },
+  { _id: "demo2", name: "Smart Fitness Watch", category: "Electronics", price: 199, stock: 120, photo: [{ url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop" }], createdAt: new Date().toISOString() },
+  { _id: "demo3", name: "Leather Laptop Bag", category: "Accessories", price: 89, stock: 78, photo: [{ url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100&h=100&fit=crop" }], createdAt: new Date().toISOString() },
+  { _id: "demo4", name: "Organic Coffee Beans", category: "Food", price: 24, stock: 200, photo: [{ url: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100&h=100&fit=crop" }], createdAt: new Date().toISOString() },
+  { _id: "demo5", name: "Minimalist Desk Lamp", category: "Home", price: 65, stock: 56, photo: [{ url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=100&h=100&fit=crop" }], createdAt: new Date().toISOString() },
+];
+
 const Products = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
+  
   const { data, isLoading, isError, error } = productAPI.useAllProductsQuery(
-    user?._id!
+    user?._id!,
+    { skip: isDemoMode }
   );
 
-  if (isLoading)
+  // Use demo data in demo mode
+  const products = isDemoMode ? demoProducts : data?.products;
+  const showLoading = !isDemoMode && isLoading;
+  const showError = !isDemoMode && isError;
+
+  if (showLoading)
     return <div className="flex items-center justify-center">Loading...</div>;
-  if (isError) return <div>{JSON.stringify(error)}</div>;
+  if (showError) return <div>{JSON.stringify(error)}</div>;
 
   return (
     <div className="grid sm:ml-4  grid-cols-1 fixed">
@@ -68,7 +85,7 @@ const Products = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data?.products?.map((product) => (
+                  {products?.map((product) => (
                     <TableRow key={product._id}>
                       <TableCell className="flex items-center py-2 gap-2">
                         <img

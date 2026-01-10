@@ -48,7 +48,7 @@ const AvatarImage = React.forwardRef<
     />
   ) : (
     <UserIcon
-      className={`w-10 h-10 p-2 bg-gray-800 rounded-full text-gray-400 block ${
+      className={`w-10 h-10 p-2 bg-gray-800  rounded-full text-gray-400 block ${
         className || ""
       }`}
       ref={ref as React.MutableRefObject<SVGSVGElement>}

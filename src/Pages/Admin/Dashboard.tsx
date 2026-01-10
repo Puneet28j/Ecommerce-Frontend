@@ -132,14 +132,37 @@ const BarChartCard = ({
 
 const Dashboard = () => {
   const userId = useSelector(
-    (state: RootState) => state.userReducer.user?._id!
+    (state: RootState) => state.userReducer.user?._id
   );
-  const { data: stats } = dashboardApi.useStatsQuery(userId);
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
+  
+  // Demo data for showcasing the dashboard
+  const demoStats = {
+    count: {
+      revenue: { total: 125000, lastMonth: 45000, thisMonth: 52000 },
+      product: { total: 156, lastMonth: 12, thisMonth: 18 },
+      user: { total: 1234, lastMonth: 89, thisMonth: 124 },
+      order: { total: 892, lastMonth: 156, thisMonth: 189 },
+    },
+    changePercent: { revenue: 15.5, product: 50, user: 39.3, order: 21.2 },
+    chart: {
+      order: [45, 52, 68, 72, 85, 92],
+      revenue: [32000, 38000, 42000, 45000, 48000, 52000],
+    },
+  };
 
-  const orderData = formatChartData(stats?.stats?.chart?.order || []);
-  const revenueData = formatChartData(stats?.stats?.chart?.revenue || []);
-  const statsData = stats?.stats?.count || defaultStats;
-  const changePercentData = stats?.stats?.changePercent || defaultChangePercent;
+  // Use real API data if logged in as admin, otherwise use demo data
+  const { data: stats } = dashboardApi.useStatsQuery(userId || "demo", {
+    skip: isDemoMode && !userId,
+  });
+
+  // Use demo data if in demo mode or if stats aren't available
+  const effectiveStats = isDemoMode && !stats ? { stats: demoStats } : stats;
+
+  const orderData = formatChartData(effectiveStats?.stats?.chart?.order || []);
+  const revenueData = formatChartData(effectiveStats?.stats?.chart?.revenue || []);
+  const statsData = effectiveStats?.stats?.count || defaultStats;
+  const changePercentData = effectiveStats?.stats?.changePercent || defaultChangePercent;
   const firstMonth = orderData?.[0]?.month || "";
   const lastMonth = orderData?.[orderData.length - 1]?.month || "";
 

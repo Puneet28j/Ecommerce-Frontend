@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { User } from "../../types/types";
 import BreadCrumb from "../BreadCrumb";
 import UserAvatar from "../UserAvatar";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 interface PropsType {
   user: User | null;
@@ -20,9 +22,10 @@ const Header = ({ user, loading }: PropsType) => {
   };
 
   const isHomePage = location.pathname === "/";
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+    <header className={`sticky z-30 flex h-14 items-center justify-between border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 transition-all duration-300 ${isDemoMode ? "top-12" : "top-0"}`}>
       {/* Breadcrumb (desktop only) */}
       <div className="hidden sm:block sm:ml-10">
         <BreadCrumb />

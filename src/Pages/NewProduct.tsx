@@ -1,14 +1,15 @@
+import { Loader2, PlusCircleIcon, PlusIcon, X } from "lucide-react";
 import React, {
   FormEvent,
-  useState,
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from "react";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { cn } from "../lib/utils";
 import { Button } from "../components/ui/button";
 import {
   Dialog,
@@ -28,16 +29,15 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "../components/ui/drawer";
+import { FloatingInput, FloatingLabel } from "../components/ui/floating-label";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Loader2, PlusCircleIcon, PlusIcon, X } from "lucide-react";
-import { FloatingInput, FloatingLabel } from "../components/ui/floating-label";
 import { ScrollArea } from "../components/ui/scroll-area";
-import { RootState } from "../redux/store";
-import { productAPI } from "../redux/api/productAPI";
-import { responseToast } from "../utils/features";
-import toast from "react-hot-toast";
 import { Textarea } from "../components/ui/textarea";
+import { cn } from "../lib/utils";
+import { productAPI } from "../redux/api/productAPI";
+import { RootState } from "../redux/store";
+import { responseToast } from "../utils/features";
 
 // Types
 interface UploadState {
@@ -235,6 +235,7 @@ export const FormFields: React.FC<FormFieldsProps> = ({
 export const NewProduct = () => {
   const isDesktop = useMediaQuery({ query: "(min-width: 1224px)" });
   const { user } = useSelector((state: RootState) => state.userReducer);
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
   const navigate = useNavigate();
   const [newProduct] = productAPI.useNewProductMutation();
 
@@ -341,6 +342,12 @@ export const NewProduct = () => {
 
     // Handle file uploads with retry logic
     try {
+      if (isDemoMode) {
+        toast.error("This is a Read-Only Demo. Contact me for full admin access at puneet2862001j@gmail.com.");
+        setLoading(false);
+        return;
+      }
+
       for (const queuedFile of formData.photo) {
         const maxRetries = 3;
         let retryCount = 0;
@@ -366,6 +373,7 @@ export const NewProduct = () => {
       }
 
       const res = await newProduct({ id: user._id, formData: submitData });
+        
       responseToast(res, navigate, "/admin/products");
       if (res) setOpen(false);
     } catch (error) {

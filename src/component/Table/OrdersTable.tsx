@@ -20,10 +20,12 @@ import { useOrderTableState } from "@/lib/hooks";
 import { Order } from "@/types/types";
 import { filterParams, paginationParams, sortingParams } from "@/lib/utils";
 import { orderApi } from "@/redux/api/orderAPI";
+import { demoAPI } from "@/redux/api/demoAPI";
 import { createColumns } from "./Column";
 import { EmptyState, ErrorState, TableSkeleton } from "./TableStates";
 import { TableFilters } from "./Filters";
 import { TablePagination } from "./TablePagnation";
+import { RootState } from "@/redux/store";
 
 const OrdersTable = () => {
   const navigate = useNavigate();
@@ -49,6 +51,8 @@ const OrdersTable = () => {
   } = useOrderTableState();
 
   // Orders query params
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
+  
   const orderQueryParams = useMemo(
     () => ({
       id: user?._id!,
@@ -72,25 +76,43 @@ const OrdersTable = () => {
     ]
   );
 
-  const { data, isLoading, isError } = orderApi.useAllOrdersQuery(
+  const { data: regularData, isLoading: regularIsLoading, isError: regularIsError } = orderApi.useAllOrdersQuery(
     orderQueryParams,
     {
       refetchOnMountOrArgChange: false,
+      skip: isDemoMode,
     }
   );
+
+  const { data: demoData, isLoading: demoIsLoading, isError: demoIsError } = demoAPI.useDemoOrdersQuery(
+    {
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      search: searchQuery,
+      sort: sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined,
+      status: columnFilters.find((f) => f.id === "status")?.value as string,
+    },
+    {
+      skip: !isDemoMode,
+    }
+  );
+
+  const data = isDemoMode ? demoData : regularData;
+  const isLoading = isDemoMode ? demoIsLoading : regularIsLoading;
+  const isError = isDemoMode ? demoIsError : regularIsError;
 
   // Navigation handlers
 
   const onViewOrder = useCallback(
     (id: string) => {
-      navigate(`/orders/${id}`);
+      navigate(`/admin/transaction/${id}`);
     },
     [navigate]
   );
 
   const onEditOrder = useCallback(
     (id: string) => {
-      navigate(`/orders/${id}/edit`);
+      navigate(`/admin/transaction/${id}`);
     },
     [navigate]
   );

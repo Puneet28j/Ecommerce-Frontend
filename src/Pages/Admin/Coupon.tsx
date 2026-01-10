@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { UserReducerInitialState } from "@/types/reducer-types";
+import { RootState } from "@/redux/store";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,8 @@ const Coupon = () => {
   const { user } = useSelector(
     (state: { userReducer: UserReducerInitialState }) => state.userReducer
   );
+  
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
 
   const { data, isLoading } = couponApi.useGetCouponsQuery(user?._id || "");
   const [createCoupon, { isLoading: isCreating }] =
@@ -39,6 +42,11 @@ const Coupon = () => {
 
     if (!user?._id) {
       toast.error("User authentication required");
+      return;
+    }
+
+    if (isDemoMode) {
+      toast.error("This is a Read-Only Demo. Contact me for full admin access at puneet2862001j@gmail.com.");
       return;
     }
 

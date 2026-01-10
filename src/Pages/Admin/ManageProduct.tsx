@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { productAPI } from "../../redux/api/productAPI";
+import { demoAPI } from "../../redux/api/demoAPI";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -44,10 +45,20 @@ const ManageProduct = () => {
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const { data: productData } = productAPI.useProductDetailsQuery(id || "");
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
+
+  const { data: regularProductData } = productAPI.useProductDetailsQuery(id || "", {
+    skip: isDemoMode,
+  });
+  const { data: demoProductData } = demoAPI.useDemoProductDetailsQuery(id || "", {
+    skip: !isDemoMode,
+  });
+  
+  const productData = isDemoMode ? demoProductData : regularProductData;
+
   const [updateProduct] = productAPI.useUpdateProductMutation();
   const [deleteProduct] = productAPI.useDeleteProductMutation();
-
+  
   const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
@@ -111,7 +122,6 @@ const ManageProduct = () => {
       photo: prev.photo.filter((_, i) => i !== index),
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?._id) {
@@ -138,11 +148,17 @@ const ManageProduct = () => {
     });
 
     try {
+      if (isDemoMode) {
+         toast.error("This is a Read-Only Demo. Contact me for full admin access at puneet2862001j@gmail.com.");
+         setLoading(false);
+         return;
+      }
+      
       const result = await updateProduct({
-        productId: id!,
-        userId: user._id,
-        formData: form,
-      }).unwrap();
+            productId: id!,
+            userId: user._id,
+            formData: form,
+          }).unwrap();
 
       toast.success(result.message);
       navigate("/admin/products");
@@ -156,12 +172,17 @@ const ManageProduct = () => {
   const handleDelete = async () => {
     if (!user?._id || !id) return;
 
+    if (isDemoMode) {
+      toast.error("This is a Read-Only Demo. Contact me for full admin access at puneet2862001j@gmail.com.");
+      return;
+   }
+
     setDeleteLoading(true);
     try {
       const result = await deleteProduct({
-        userId: user._id,
-        productId: id,
-      }).unwrap();
+            userId: user._id,
+            productId: id,
+          }).unwrap();
 
       toast.success(result.message);
       navigate("/admin/products");

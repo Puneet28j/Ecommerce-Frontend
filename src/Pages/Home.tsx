@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../component/ProductCard";
 import { CardTitle } from "../components/ui/card";
@@ -9,6 +9,8 @@ import { productAPI } from "../redux/api/productAPI";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
 import { BiRightArrow } from "react-icons/bi";
+import TryDemoButton from "../component/TryDemoButton";
+import { RootState } from "../redux/store";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ const Home = () => {
     productAPI.useBestSellingQuery();
   const { data: BudgetProducts, isLoading: BudgetIsLoading } =
     productAPI.useBudgetQuery();
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
   const addToCartHandler = (cartItem: CartItem) => {
     if (cartItem.stock < 1) return toast.error("Out of stock");
     dispatch(addToCart(cartItem));
@@ -44,12 +47,15 @@ const Home = () => {
         <p className="text-lg opacity-90 font-primary mb-6">
           Discover premium products at unbeatable prices
         </p>
-        <button
-          onClick={() => navigate("/search")}
-          className="bg-white dark:bg-gray-900 flex items-center gap-1 shadow-sm shadow-gray-400  text-primary font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition"
-        >
-          Start Shopping <BiRightArrow />
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <button
+            onClick={() => navigate("/search")}
+            className="bg-white dark:bg-gray-900 flex items-center gap-1 shadow-sm shadow-gray-400  text-primary font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition"
+          >
+            Start Shopping <BiRightArrow />
+          </button>
+          {!isDemoMode && <TryDemoButton />}
+        </div>
       </section>
 
       <section className="space-y-2">

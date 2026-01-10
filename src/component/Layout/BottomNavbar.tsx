@@ -11,23 +11,22 @@ import {
   LayoutDashboardIcon,
   PackageIcon,
   ShoppingCartIcon,
-  UsersIcon,
+  
   BarChart3Icon,
   TagsIcon,
   Bookmark,
   BookmarkCheck,
 } from "lucide-react";
 import { ModeToggle } from "../ModeToggle";
+import { User } from "@/types/types";
 
-export interface NavItemConfig {
-  to: string;
-  iconActive: JSX.Element;
-  iconInactive: JSX.Element;
-  showBadge?: boolean;
-  adminOnly?: boolean;
+interface PropsType {
+  user?: User | null;
+  loading?: boolean;
 }
 
-const NAV_ITEMS: NavItemConfig[] = [
+// ✅ Define user and admin nav items separately
+const USER_NAV_ITEMS = [
   {
     to: "/",
     iconActive: <HomeIcon strokeWidth={2.5} className="w-7 h-7" />,
@@ -55,45 +54,42 @@ const NAV_ITEMS: NavItemConfig[] = [
     iconActive: <PackageOpenIcon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <PackageOpenIcon strokeWidth={1.5} className="w-7 h-7" />,
   },
+];
+
+const ADMIN_NAV_ITEMS = [
   {
     to: "/admin/dashboard",
     iconActive: <LayoutDashboardIcon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <LayoutDashboardIcon strokeWidth={1.5} className="w-7 h-7" />,
-    adminOnly: true,
   },
   {
     to: "/admin/orders",
     iconActive: <PackageIcon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <PackageIcon strokeWidth={1.5} className="w-7 h-7" />,
-    adminOnly: true,
   },
   {
     to: "/admin/products",
     iconActive: <ShoppingCartIcon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <ShoppingCartIcon strokeWidth={1.5} className="w-7 h-7" />,
-    adminOnly: true,
   },
-  {
-    to: "/admin/customers",
-    iconActive: <UsersIcon strokeWidth={2.5} className="w-7 h-7" />,
-    iconInactive: <UsersIcon strokeWidth={1.5} className="w-7 h-7" />,
-    adminOnly: true,
-  },
+  // {
+  //   to: "/admin/customers",
+  //   iconActive: <UsersIcon strokeWidth={2.5} className="w-7 h-7" />,
+  //   iconInactive: <UsersIcon strokeWidth={1.5} className="w-7 h-7" />,
+  // },
   {
     to: "/admin/analytics",
     iconActive: <BarChart3Icon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <BarChart3Icon strokeWidth={1.5} className="w-7 h-7" />,
-    adminOnly: true,
   },
   {
     to: "/admin/coupon",
     iconActive: <TagsIcon strokeWidth={2.5} className="w-7 h-7" />,
     iconInactive: <TagsIcon strokeWidth={1.5} className="w-7 h-7" />,
-    adminOnly: true,
   },
 ];
 
-const BottomNavbar: React.FC = () => {
+const BottomNavbar = ({ user }: PropsType) => {
   const [visible, setVisible] = useState(true);
   const [lastY, setLastY] = useState(0);
   const [lastTouch, setLastTouch] = useState(0);
@@ -104,30 +100,30 @@ const BottomNavbar: React.FC = () => {
   const wishlistCount = useSelector(
     (state: RootState) => state.wishlist.ids.length
   );
-  const userRole = useSelector(
-    (state: RootState) => state.userReducer.user?.role
-  );
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
 
-  const navItems = useMemo(
-    () => NAV_ITEMS.filter((item) => !item.adminOnly || userRole === "admin"),
-    [userRole]
-  );
+  // ✅ Determine which nav items to show based on user role or demo mode
+  const navItems = useMemo(() => {
+    if (user?.role === "admin" || isDemoMode) return ADMIN_NAV_ITEMS;
+    return USER_NAV_ITEMS;
+  }, [user?.role, isDemoMode]);
 
-  // Scroll hide/show logic (debounced)
+  // ✅ Scroll hide/show logic
   const onScroll = useCallback(
     debounce(() => {
       const y = window.scrollY;
-      setVisible(y < lastY || y < 80); // don’t hide immediately at top
+      setVisible(y < lastY || y < 80);
       setLastY(y);
     }, 100),
     [lastY]
   );
 
-  // Touch events for mobile
+  // ✅ Touch scroll for mobile
   const onTouchStart = useCallback(
     (e: TouchEvent) => setLastTouch(e.touches[0].clientY),
     []
   );
+
   const onTouchMove = useCallback(
     (e: TouchEvent) => {
       const y = e.touches[0].clientY;
@@ -151,8 +147,7 @@ const BottomNavbar: React.FC = () => {
   return (
     <div
       className={`fixed bottom-0 left-0 w-full z-50 sm:hidden backdrop-blur-md border-t border-gray-200/20 dark:border-gray-700/30 
-        transition-all duration-500 ease-&lsqb;cubic-bezier(0.16,1,0.3,1)&rsqb;
-
+        transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
         ${visible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}
       `}
     >

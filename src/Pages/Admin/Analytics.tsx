@@ -27,20 +27,32 @@ const defaultChangePercent = {
   order: 0,
 };
 
+import { demoAPI } from "@/redux/api/demoAPI";
+
 const Analytics = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
   const userId = user?._id;
 
-  // Show a message if there is no user
-  if (!userId) {
+  // Show a message if there is no user and not in demo mode
+  if (!userId && !isDemoMode) {
     return <div>Please log in to view analytics.</div>;
   }
 
-  // API calls for different chart data
-  const { data: stats } = dashboardApi.useStatsQuery(userId);
-  // const { data: line } = dashboardApi.useLineQuery(userId);
-  const { data: bar } = dashboardApi.useBarQuery(userId);
-  const { data: pie } = dashboardApi.usePieQuery(userId);
+  // Regular API calls
+  const statsQuery = dashboardApi.useStatsQuery(userId!, { skip: isDemoMode });
+  const barQuery = dashboardApi.useBarQuery(userId!, { skip: isDemoMode });
+  const pieQuery = dashboardApi.usePieQuery(userId!, { skip: isDemoMode });
+
+  // Demo API calls
+  const demoStatsQuery = demoAPI.useDemoStatsQuery(undefined, { skip: !isDemoMode });
+  const demoBarQuery = demoAPI.useDemoBarQuery(undefined, { skip: !isDemoMode });
+  const demoPieQuery = demoAPI.useDemoPieQuery(undefined, { skip: !isDemoMode });
+
+  // Effective data
+  const stats = isDemoMode ? demoStatsQuery.data : statsQuery.data;
+  const bar = isDemoMode ? demoBarQuery.data : barQuery.data;
+  const pie = isDemoMode ? demoPieQuery.data : pieQuery.data;
 
   // Pre-process data for clarity
   const statsData = stats?.stats?.count || defaultStats;

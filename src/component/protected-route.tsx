@@ -1,5 +1,7 @@
 import { ReactElement } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 interface Props {
   children?: ReactElement;
@@ -16,6 +18,13 @@ const ProtectedRoute = ({
   admin,
   redirect = "/",
 }: Props) => {
+  const { isDemoMode } = useSelector((state: RootState) => state.demo);
+
+  // Allow access if in demo mode for admin routes
+  if (adminOnly && isDemoMode) {
+    return children ? children : <Outlet />;
+  }
+
   if (!isAuthenticated) return <Navigate to={redirect} />;
   if (adminOnly && !admin) return <Navigate to={redirect} />;
 

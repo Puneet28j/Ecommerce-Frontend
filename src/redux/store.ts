@@ -9,6 +9,8 @@ import { reviewAPI } from "./api/reviewAPI";
 import { orderReducer } from "./reducer/orderReducer";
 import { couponApi } from "./api/couponAPI";
 import { wishlistReducer } from "./reducer/wishlistReducer";
+import { demoReducer } from "./reducer/demoSlice";
+import { demoAPI } from "./api/demoAPI";
 
 export const server = import.meta.env.VITE_SERVER;
 console.log("Server:", server);
@@ -25,6 +27,8 @@ export const store = configureStore({
     [orderReducer.name]: orderReducer.reducer,
     [couponApi.reducerPath]: couponApi.reducer,
     [wishlistReducer.name]: wishlistReducer.reducer,
+    [demoReducer.name]: demoReducer.reducer,
+    [demoAPI.reducerPath]: demoAPI.reducer,
   },
   middleware: (mid) =>
     mid().concat(
@@ -33,7 +37,8 @@ export const store = configureStore({
       orderApi.middleware,
       dashboardApi.middleware,
       reviewAPI.middleware,
-      couponApi.middleware
+      couponApi.middleware,
+      demoAPI.middleware
     ),
 });
 

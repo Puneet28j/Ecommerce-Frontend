@@ -24,6 +24,7 @@ const AdminDashboard = lazy(() => import("./Pages/Admin/Dashboard"));
 const AdminProducts = lazy(() => import("./Pages/Admin/Products"));
 const OrdersTable = lazy(() => import("./component/Table/OrdersTable"));
 const Coupon = lazy(() => import("./Pages/Admin/Coupon"));
+const Transaction = lazy(() => import("./Pages/Admin/Transaction"));
 
 const AppRoutes = () => {
   const { user, loading } = useSelector(
@@ -64,6 +65,7 @@ const AppRoutes = () => {
               element={<ManageProduct />}
             />
             <Route path={ROUTES.ADMIN_ORDERS} element={<OrdersTable />} />
+            <Route path={ROUTES.ADMIN_TRANSACTION} element={<Transaction />} />
             <Route path={ROUTES.ADMIN_ANALYTICS} element={<Analytics />} />
             <Route path={ROUTES.COUPON} element={<Coupon />} />
           </Route>

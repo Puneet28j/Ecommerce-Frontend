@@ -146,6 +146,7 @@ export type NewOrderRequest = {
 export type UpdateOrderRequest = {
   userId: string;
   orderId: string;
+  status?: string;
 };
 
 export interface ExistingPhoto {
@@ -165,3 +166,11 @@ export interface WishlistResponse {
   success: boolean;
   wishlist: Product[];
 }
+
+export type AllOrdersRequest = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: string;
+  status?: string;
+};
